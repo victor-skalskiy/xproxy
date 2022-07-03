@@ -1,4 +1,4 @@
-﻿namespace XProxy_web.Models;
+﻿namespace XProxy.Web.Models;
 
 public class ErrorViewModel
 {

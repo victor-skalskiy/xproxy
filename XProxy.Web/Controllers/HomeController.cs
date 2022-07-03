@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using XProxy_web.Models;
+using XProxy.Web.Models;
 
-namespace XProxy_web.Controllers;
+namespace XProxy.Web.Controllers;
 
 public class HomeController : Controller
 {
