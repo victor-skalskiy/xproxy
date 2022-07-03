@@ -3,12 +3,10 @@ using System.Collections.Generic;
 
 namespace XProxy.DAL
 {
-    public class AV100Filter
+    public class AV100Filter : BaseEntity
     {
         public AV100Filter() { }
-
-        public long Id { get; set; }
-
+       
         /// <summary>
         /// Link to settings
         /// </summary>

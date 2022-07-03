@@ -2,7 +2,7 @@
 
 namespace XProxy.DAL
 {
-    public class UserSettings
+    public class UserSettings : BaseEntity
     {
         public UserSettings() { }
         public string UserId { get; set; }
