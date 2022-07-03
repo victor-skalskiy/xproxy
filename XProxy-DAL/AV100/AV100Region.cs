@@ -1,5 +1,5 @@
 ﻿using System;
-namespace XProxy.Models
+namespace XProxy.DAL
 {
     /// <summary>
     /// https://data.av100.ru/dictionaries.ashx?key=APIKEY&methodname=offersregion

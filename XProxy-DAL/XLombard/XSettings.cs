@@ -1,5 +1,5 @@
 ﻿using System;
-namespace XProxy.Models
+namespace XProxy.DAL
 {
     public class XSettings
     {

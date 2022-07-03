@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace XProxy.Models
+namespace XProxy.DAL
 {
     public class AV100Filter
     {
