@@ -10,7 +10,7 @@ builder
     {
         options
             .UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
-        assebmly => { assebmly.MigrationsAssembly("XProxy.DAL.Migration"); });
+        assebmly => { assebmly.MigrationsAssembly("XProxy.DataMigration"); });
     })
     .AddControllersWithViews();
 
