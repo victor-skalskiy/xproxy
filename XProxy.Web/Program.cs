@@ -12,8 +12,7 @@ builder.Services
     .AddDbContext<DataContext>(options =>
     {
         options
-            .UseNpgsql(connectionString,
-        assebmly => { assebmly.MigrationsAssembly("XProxy.DataMigration"); });
+            .UseNpgsql(connectionString);
     })
     .AddScoped<ISettingsService, SettingsService>()
     .AddControllersWithViews();

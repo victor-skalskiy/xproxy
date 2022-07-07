@@ -14,10 +14,6 @@
     <None Remove="Microsoft.EntityFrameworkCore.Tools" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="Xproxy.DAL.Migration">
-      <ReferenceSourceTarget></ReferenceSourceTarget>
-      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
-    </ProjectReference>
     <ProjectReference Include="..\XProxy.DAL\XProxy.DAL.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
