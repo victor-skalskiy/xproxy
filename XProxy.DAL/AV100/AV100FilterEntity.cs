@@ -3,14 +3,14 @@ using System.Collections.Generic;
 
 namespace XProxy.DAL
 {
-    public class AV100Filter : BaseEntity
+    public class AV100FilterEntity : BaseEntityEntity
     {
-        public AV100Filter() { }
+        public AV100FilterEntity() { }
        
         /// <summary>
         /// Link to settings
         /// </summary>
-        public long UserSettingsId { get; set; }
+        public long UserSettingsEntityId { get; set; }
 
         /// <summary>
         /// Car manufacture period
@@ -24,9 +24,9 @@ namespace XProxy.DAL
         public long DistanceStart { get; set; }
         public long DistanceEnd { get; set; }
 
-        public ICollection<AV100Region> Regions { get; set; }
+        public ICollection<AV100RegionEntity>? Regions { get; set; }
 
-        public ICollection<AV100Source> Sources { get; set; }
+        public ICollection<AV100SourceEntity>? Sources { get; set; }
 
         /// <summary>
         /// Limit of cars wich linked to current adv phones

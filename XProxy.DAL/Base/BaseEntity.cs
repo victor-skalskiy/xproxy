@@ -1,11 +1,14 @@
 ﻿using System;
 namespace XProxy.DAL
 {
-    public class BaseEntity : IBaseEntity
+    public class BaseEntityEntity : IEntity
     {
         public long Id { get; set; }
         public bool IsActive { get; set; }
-        public BaseEntity() { }
+        public DateTime CreateDate { get; set; } = DateTime.Now;
+        public DateTime? ModifyDate { get; set; }
+
+        public BaseEntityEntity() { }
     }
 }
 
