@@ -1,0 +1,32 @@
+﻿@model SettingsEditModel
+@{
+    ViewData["Title"] = "Edit settings";
+}
+<h1>@ViewData["Title"]</h1>
+
+<form asp-controller="Settings" asp-action="Create">
+    <div class="form-group">
+        <label asp-for="@Model.Av100Token"></label>
+        <input asp-for="@Model.Av100Token" class="form-control" />
+        <span asp-validation-for="@Model.Av100Token" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="@Model.XLAPIUrl"></label>
+        <input asp-for="@Model.XLAPIUrl" class="form-control" />
+        <span asp-validation-for="@Model.XLAPIUrl" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="@Model.XLToken"></label>
+        <input asp-for="@Model.XLToken" class="form-control" />
+        <span asp-validation-for="@Model.XLToken" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="@Model.UserUpdateInterval"></label>
+        <input asp-for="@Model.UserUpdateInterval" class="form-control" />
+        <span asp-validation-for="@Model.UserUpdateInterval" class="text-danger"></span>
+    </div>
+    <button type="submit">Сохранить</button>
+</form>

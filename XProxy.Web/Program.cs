@@ -1,17 +1,21 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using XProxy.DAL;
+using XProxy.Interfaces;
+using XProxy.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
 // Add services to the container.
-builder
-    .Services
+builder.Services
     .AddDbContext<DataContext>(options =>
     {
         options
-            .UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
+            .UseNpgsql(connectionString,
         assebmly => { assebmly.MigrationsAssembly("XProxy.DataMigration"); });
     })
+    .AddScoped<ISettingsService, SettingsService>()
     .AddControllersWithViews();
 
 var app = builder.Build();
@@ -19,7 +23,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+    app.UseExceptionHandler("/Settings/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
@@ -33,7 +37,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Settings}/{action=Index}/{id?}");
 
 app.Run();
 
