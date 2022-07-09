@@ -45,9 +45,12 @@ public class SettingsService : ISettingsService
     {
         return await _context.UserSettings.Select(x => new UserSettingsItem
         {
-            UpdateInterval = x.UpdateInterval,
-            YearEnd = x.AV100Filter.YearEnd,
-            YearStart = x.AV100Filter.YearStart
+            Av100Token = x.AV100Token,
+            Id = x.Id,
+            XLombardAPIUrl = x.XLombardAPIUrl,
+            XLombardToken = x.XLombardToken,
+            UpdateInterval = x.UpdateInterval
+
         }).ToArrayAsync();
     }
 }

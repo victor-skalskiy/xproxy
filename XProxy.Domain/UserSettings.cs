@@ -1,4 +1,5 @@
 ﻿namespace XProxy.Domain;
+
 public class UserSettings
 {
     public long Id { get; set; }
@@ -10,6 +11,4 @@ public class UserSettings
     public string XLombardAPIUrl { get; set; }
 
     public string XLombardToken { get; set; }
-
 }
-

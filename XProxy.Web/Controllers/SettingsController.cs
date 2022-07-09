@@ -17,11 +17,12 @@ public class SettingsController : Controller
         _logger = logger;
     }
 
+    [HttpGet]
     public async Task<IActionResult> Index()
     {
-        //var asd = await _settingsService.GetSettingsAsync(HttpContext.RequestAborted);
+        var result = await _settingsService.GetSettingsAsync(HttpContext.RequestAborted);
 
-        return View();
+        return View(result);
     }
 
     [HttpGet]

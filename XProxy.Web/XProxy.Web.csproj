@@ -12,6 +12,10 @@
     <None Remove="Microsoft.EntityFrameworkCore.Design" />
     <None Remove="Microsoft.EntityFrameworkCore" />
     <None Remove="Microsoft.EntityFrameworkCore.Tools" />
+    <None Remove="Hangfire" />
+    <None Remove="Hangfire.Core" />
+    <None Remove="Hangfire.MemoryStorage" />
+    <None Remove="Hangfire.AspNetCore" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\XProxy.DAL\XProxy.DAL.csproj">
@@ -44,5 +48,9 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Hangfire.Core" Version="1.7.30" />
+    <PackageReference Include="Hangfire.MemoryStorage" Version="1.7.0" />
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.7.30" />
+    <PackageReference Include="Hangfire" Version="1.7.30" />
   </ItemGroup>
 </Project>

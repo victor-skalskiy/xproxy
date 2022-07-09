@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Hangfire;
+using Hangfire.MemoryStorage;
+using Microsoft.EntityFrameworkCore;
 using XProxy.DAL;
 using XProxy.Interfaces;
 using XProxy.Services;
@@ -15,6 +17,12 @@ builder.Services
             .UseNpgsql(connectionString);
     })
     .AddScoped<ISettingsService, SettingsService>()
+    .AddHangfire(hangfire =>
+        hangfire
+            .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+            .UseSimpleAssemblyNameTypeSerializer()
+            .UseDefaultTypeSerializer()
+            .UseMemoryStorage())
     .AddControllersWithViews();
 
 var app = builder.Build();
@@ -37,6 +45,8 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Settings}/{action=Index}/{id?}");
+
+app.UseHangfireDashboard();
 
 app.Run();
 
