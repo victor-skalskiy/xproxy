@@ -1,35 +1,49 @@
 ﻿@using XProxy.Domain;
 @model ICollection<UserSettingsItem>
 @{
-    ViewData["Title"] = "Настройки подключений к сервисам";
+    ViewData["Title"] = "Dashboard";
 }
 
 <h1>@ViewData["Title"]</h1>
-
-<table class="table">
-    <thead class=".thead-dark">
-        <tr>
-            <th scope="col">ID</th>
-            <th scope="col">XL API key</th>
-            <th scope="col">XL url</th>
-            <th scope="col">AV100 API key</th>
-            <th scope="col">Interval</th>
-        </tr>
-    </thead>
-    <tbody>
-        @{
-            foreach (var item in Model)
-            {
-                <tr>
-                    <th scope="row">@item.Id</th>
-                    <td>@item.XLombardToken</td>
-                    <td>@item.XLombardAPIUrl</td>
-                    <td>@item.Av100Token</td>
-                    <td>@item.UpdateInterval</td>
-                </tr>
+<hr style="padding-bottom: 25px;" />
+@if (Model.Count > 0)
+{
+    <h2>API Settings</h2>
+    <table class="table">
+        <thead class=".thead-dark">
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">XL API key</th>
+                <th scope="col">XL url</th>
+                <th scope="col">AV100 API key</th>
+                <th scope="col">Interval</th>
+                <th scope="col">Edit</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <th scope="row">@item.Id</th>
+                        <td>@item.XLombardToken</td>
+                        <td>@item.XLombardAPIUrl</td>
+                        <td>@item.Av100Token</td>
+                        <td>@item.UpdateInterval</td>
+                        <td>@Html.ActionLink("Edit", "Edit", "Settings", new { id = item.Id })</td>
+                    </tr>
+                }
             }
-        }
-    </tbody>
-</table>
+        </tbody>
+    </table>
+
+}
+else
+{
+    <h2>There are no API connections, click Create to start configuring it</h2>
+}
 
 
+<form asp-controller="Settings" asp-action="CheckConnection">
+    <button type="submit">Save</button>
+</form>

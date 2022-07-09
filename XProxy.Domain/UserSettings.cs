@@ -1,5 +1,8 @@
 ﻿namespace XProxy.Domain;
 
+/// <summary>
+/// Card element, for working with BL
+/// </summary>
 public class UserSettings
 {
     public long Id { get; set; }
@@ -11,4 +14,13 @@ public class UserSettings
     public string XLombardAPIUrl { get; set; }
 
     public string XLombardToken { get; set; }
+
+    public long XLombardFilialId { get; set; }
+
+    public long XLombardDealTypeId { get; set; }
+
+    public string XLombardSource { get; set; }
+
+    public string RequestUrl => $"{XLombardAPIUrl}/handlers/requests.ashx?operation=add&token={XLombardToken}";
+    public string RequestCommand => $"?operation=add&token={XLombardToken}";
 }

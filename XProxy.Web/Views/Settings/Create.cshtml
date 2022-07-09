@@ -1,14 +1,14 @@
 ﻿@model SettingsEditModel
 @{
-    ViewData["Title"] = "Edit User Settings";
+    ViewData["Title"] = "Create User Settings";
 }
 <h1>@ViewData["Title"]</h1>
 
-<form asp-controller="Settings" asp-action="Edit">
+<form asp-controller="Settings" asp-action="Create">
 
     <partial name="_EditCreatePartial" model="@Model" />
 
     <div class="form-group pt-3">
-        <button type="submit">Save</button>
+        <button type="submit">Create</button>
     </div>
 </form>

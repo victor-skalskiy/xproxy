@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using XProxy.DAL;
 using XProxy.Interfaces;
 using XProxy.Services;
+using Polly;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +25,12 @@ builder.Services
             .UseDefaultTypeSerializer()
             .UseMemoryStorage())
     .AddControllersWithViews();
+
+builder.Services.AddHttpClient("MyBaseClient", client =>
+{
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+});
+
 
 var app = builder.Build();
 

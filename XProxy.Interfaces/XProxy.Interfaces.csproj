@@ -9,4 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\XProxy.Domain\XProxy.Domain.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\.editorconfig" />
+  </ItemGroup>
 </Project>

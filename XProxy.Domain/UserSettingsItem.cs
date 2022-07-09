@@ -1,5 +1,8 @@
 ﻿namespace XProxy.Domain;
 
+/// <summary>
+/// Element of list, for rendering on index
+/// </summary>
 public class UserSettingsItem
 {
     public long Id { get; set; }

@@ -10,6 +10,11 @@ namespace XProxy.DAL
 
         public string XLombardToken { get; set; }
 
+        public long XLombardFilialId { get; set; }
+
+        public long XLombardDealTypeId { get; set; }
+
+        public string XLombardSource { get; set; }
 
         public string AV100Token { get; set; }
 

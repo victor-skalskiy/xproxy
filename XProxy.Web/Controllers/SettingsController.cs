@@ -1,8 +1,10 @@
 ﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using XProxy.DAL;
 using XProxy.Web.Models;
 using XProxy.Interfaces;
+using Polly;
+using System;
+using Newtonsoft.Json;
 
 namespace XProxy.Web.Controllers;
 
@@ -10,12 +12,22 @@ public class SettingsController : Controller
 {
     private readonly ILogger<SettingsController> _logger;
     private readonly ISettingsService _settingsService;
+    private readonly IHttpClientFactory _httpClientFactory;
 
-    public SettingsController(ILogger<SettingsController> logger, ISettingsService settingsService)
+    public SettingsController(ILogger<SettingsController> logger, ISettingsService settingsService, IHttpClientFactory httpClientFactory)
     {
         _settingsService = settingsService;
         _logger = logger;
+        _httpClientFactory = httpClientFactory;
     }
+
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public IActionResult Error()
+    {
+        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+    }
+
+    public IActionResult Privacy() => View();
 
     [HttpGet]
     public async Task<IActionResult> Index()
@@ -34,21 +46,43 @@ public class SettingsController : Controller
     [HttpPost]
     public async Task<IActionResult> Create(SettingsEditModel model)
     {
-        var userSettings = await _settingsService.CreateUserSettingsAsync(model.UserUpdateInterval, model.Av100Token, model.XLAPIUrl, model.XLToken, HttpContext.RequestAborted);
+        var resutl = await _settingsService.CreateUserSettingsAsync(model.UpdateInterval, model.Av100Token, model.XLombardAPIUrl, model.XLombardToken,
+            model.XLombardFilialId, model.XLombardDealTypeId, model.XLombardSource, HttpContext.RequestAborted);
+
         return RedirectToAction("Index");
     }
 
-
-
-    public IActionResult Privacy()
+    [HttpGet]
+    public async Task<IActionResult> Edit(long id)
     {
-        return View();
+        var result = await _settingsService.GetSettingsItemAsync(id, HttpContext.RequestAborted);
+        return View("Edit", new SettingsEditModel
+        {
+            Av100Token = result.Av100Token,
+            UpdateInterval = result.UpdateInterval,
+            XLombardAPIUrl = result.XLombardAPIUrl,
+            XLombardToken = result.XLombardToken,
+            XLombardDealTypeId = result.XLombardDealTypeId,
+            XLombardFilialId = result.XLombardFilialId,
+            XLombardSource = result.XLombardSource
+        });
     }
 
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
+    [HttpPost]
+    public async Task<IActionResult> Edit(SettingsEditModel model, long id)
     {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        var resutl = await _settingsService.UpdateUserSettingsAsync(id, model.UpdateInterval, model.Av100Token, model.XLombardAPIUrl, model.XLombardToken,
+            model.XLombardFilialId, model.XLombardDealTypeId, model.XLombardSource, HttpContext.RequestAborted);
+
+        return RedirectToAction("Index");
     }
+
+    [HttpGet]
+    public async Task<IActionResult> CheckConnection()
+    {
+        var result = await _settingsService.XLRequest(1, HttpContext.RequestAborted);
+
+        return View("Index");
+    }
+    
 }
-
