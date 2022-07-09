@@ -13,7 +13,8 @@ public class SettingsService : ISettingsService
         _context = context;
     }
 
-    public async Task<UserSettings> CreateUserSettingsAsync(long updateInterval, string av100Token, string xLombardAPIUrl, string xLombardToken, CancellationToken token = default)
+    public async Task<UserSettings> CreateUserSettingsAsync(long updateInterval, string av100Token, string xLombardAPIUrl,
+        string xLombardToken, CancellationToken token = default)
     {
         var userSettingsEntity = new UserSettingsEntity()
         {
@@ -49,7 +50,4 @@ public class SettingsService : ISettingsService
             YearStart = x.AV100Filter.YearStart
         }).ToArrayAsync();
     }
-
-    //public async Task<>
 }
-
