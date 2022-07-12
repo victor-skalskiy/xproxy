@@ -1,46 +1,49 @@
 ﻿@model SettingsEditModel
 
 <h2>AV100</h2>
-<div class="form-group pb-3">
-    <label asp-for="@Model.Av100Token"></label>
-    <input asp-for="@Model.Av100Token" class="form-control" />
-    <span asp-validation-for="@Model.Av100Token" class="text-danger"></span>
-</div>
-
-<div class="form-group">
-    <label asp-for="@Model.UpdateInterval"></label>
-    <input asp-for="@Model.UpdateInterval" class="form-control" />
-    <span asp-validation-for="@Model.UpdateInterval" class="text-danger"></span>
+<div class="row">
+    <div class="form-group col-md-6">
+        <label asp-for="@Model.Av100Token"></label>
+        <input asp-for="@Model.Av100Token" class="form-control" />
+        <span asp-validation-for="@Model.Av100Token" class="text-danger"></span>
+    </div>
+    <div class="form-group col-md-6">
+        <label asp-for="@Model.UpdateInterval"></label>
+        <input asp-for="@Model.UpdateInterval" class="form-control" />
+        <span asp-validation-for="@Model.UpdateInterval" class="text-danger"></span>
+    </div>
 </div>
 
 <h2>XLombard</h2>
-<div class="form-group pb-3">
-    <label asp-for="@Model.XLombardAPIUrl"></label>
-    <input asp-for="@Model.XLombardAPIUrl" class="form-control" />
-    <span asp-validation-for="@Model.XLombardAPIUrl" class="text-danger"></span>
+<div class="row">
+    <div class="form-group col-md-6">
+        <label asp-for="@Model.XLombardAPIUrl"></label>
+        <input asp-for="@Model.XLombardAPIUrl" class="form-control" />
+        <span asp-validation-for="@Model.XLombardAPIUrl" class="text-danger"></span>
+    </div>
+    <div class="form-group col-md-6">
+        <label asp-for="@Model.XLombardToken"></label>
+        <input asp-for="@Model.XLombardToken" class="form-control" />
+        <span asp-validation-for="@Model.XLombardToken" class="text-danger"></span>
+    </div>
 </div>
 
-<div class="form-group pb-3">
-    <label asp-for="@Model.XLombardToken"></label>
-    <input asp-for="@Model.XLombardToken" class="form-control" />
-    <span asp-validation-for="@Model.XLombardToken" class="text-danger"></span>
-</div>
+<div class="row">
+    <div class="form-group col-md-3">
+        <label asp-for="@Model.XLombardFilialId"></label>
+        <input asp-for="@Model.XLombardFilialId" class="form-control" />
+        <span asp-validation-for="@Model.XLombardFilialId" class="text-danger"></span>
+    </div>
 
+    <div class="form-group col-md-3">
+        <label asp-for="@Model.XLombardDealTypeId"></label>
+        <input asp-for="@Model.XLombardDealTypeId" class="form-control" />
+        <span asp-validation-for="@Model.XLombardDealTypeId" class="text-danger"></span>
+    </div>
 
-<div class="form-group pb-3">
-    <label asp-for="@Model.XLombardFilialId"></label>
-    <input asp-for="@Model.XLombardFilialId" class="form-control" />
-    <span asp-validation-for="@Model.XLombardFilialId" class="text-danger"></span>
-</div>
-
-<div class="form-group pb-3">
-    <label asp-for="@Model.XLombardDealTypeId"></label>
-    <input asp-for="@Model.XLombardDealTypeId" class="form-control" />
-    <span asp-validation-for="@Model.XLombardDealTypeId" class="text-danger"></span>
-</div>
-
-<div class="form-group">
-    <label asp-for="@Model.XLombardSource"></label>
-    <input asp-for="@Model.XLombardSource" class="form-control" />
-    <span asp-validation-for="@Model.XLombardSource" class="text-danger"></span>
+    <div class="form-group col-md-6">
+        <label asp-for="@Model.XLombardSource"></label>
+        <input asp-for="@Model.XLombardSource" class="form-control" />
+        <span asp-validation-for="@Model.XLombardSource" class="text-danger"></span>
+    </div>
 </div>
