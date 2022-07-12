@@ -4,7 +4,7 @@ namespace XProxy.Domain
 	/// <summary>
     /// lement of list, working in BL
     /// </summary>
-	public class Av100FilterItem
+	public class AV100FilterItem
 	{
         public long Id { get; set; }
 

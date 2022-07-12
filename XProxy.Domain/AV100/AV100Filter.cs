@@ -4,7 +4,7 @@ namespace XProxy.Domain
 	/// <summary>
     /// Card element, working in BL
     /// </summary>
-	public class Av100Filter
+	public class AV100Filter
 	{
         public long Id { get; set; }
         public long UserSettingsId { get; set; }

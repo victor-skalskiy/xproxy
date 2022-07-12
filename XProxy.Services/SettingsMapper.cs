@@ -14,7 +14,7 @@ namespace XProxy.Services
         public static UserSettings GetUserSettings(UserSettingsEntity userSettingsEntity)
             => new UserSettings
             {
-                Av100Token = userSettingsEntity.AV100Token,
+                AV100Token = userSettingsEntity.AV100Token,
                 Id = userSettingsEntity.Id,
                 XLombardAPIUrl = userSettingsEntity.XLombardAPIUrl,
                 XLombardToken = userSettingsEntity.XLombardToken,
@@ -40,8 +40,8 @@ namespace XProxy.Services
                 FilialId = userSettings.XLombardFilialId,
             };
 
-        public static Av100Filter GetFilter(AV100FilterEntity aV100FilterEntity)
-            => new Av100Filter
+        public static AV100Filter GetFilter(AV100FilterEntity aV100FilterEntity)
+            => new AV100Filter
             {
                 YearStart = aV100FilterEntity.YearStart,
                 YearEnd = aV100FilterEntity.YearEnd,
@@ -55,8 +55,8 @@ namespace XProxy.Services
                 UserSettingsId = aV100FilterEntity.UserSettingsEntityId
                 //TODO реализовать заполнение RegionId
             };
-        public static Av100FilterItem GetFilterItem(AV100FilterEntity aV100FilterEntity)
-            => new Av100FilterItem
+        public static AV100FilterItem GetFilterItem(AV100FilterEntity aV100FilterEntity)
+            => new AV100FilterItem
             {
                 YearStart = aV100FilterEntity.YearStart,
                 YearEnd = aV100FilterEntity.YearEnd,

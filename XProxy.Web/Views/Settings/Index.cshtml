@@ -3,10 +3,22 @@
 
 @{
     ViewData["Title"] = "Dashboard";
+    var accessDate = ((AV100ResponseProfile)Model["Status"]).Result.AccessTo.ToString("D");
+    var leftClicks = ((AV100ResponseProfile)Model["Status"]).Result.LleftClicks;
 }
 
 <h1>@ViewData["Title"]</h1>
-<hr style="padding-bottom: 25px;" />
+@*<hr style="padding-bottom: 25px;" />*@
+
+<div class="card mb-5 mt-3">
+    <h5 class="card-header">AV100 balance</h5>
+    <div class="card-body">
+        <h5 class="card-title">Account enabled till @accessDate</h5>
+        <p class="card-text">Еhere are @leftClicks requests left on the balance</p>
+        <a href="https://av100.ru" class="btn btn-info" target="_blank">go to AV100</a>
+    </div>
+</div>
+
 @if (Model.ContainsKey("Settings") && ((ICollection<UserSettingsItem>)Model["Settings"]).Count > 0)
 {
     <h2>API Settings</h2>
@@ -47,8 +59,8 @@ else
     </div>
 }
 <br />
-@if (Model.ContainsKey("Filter") && ((ICollection<Av100FilterItem>)Model["Filter"]).Count > 0)
-{
+@if (Model.ContainsKey("Filter") && ((ICollection<AV100FilterItem>)Model["Filter"]).Count > 0)
+    {
     <h2>API Settings</h2>
     <table class="table">
         <thead class=".thead-dark">
@@ -66,7 +78,7 @@ else
         </thead>
         <tbody>
             @{
-                foreach (var fitem in (ICollection<Av100FilterItem>)Model["Filter"])
+                foreach (var fitem in (ICollection<AV100FilterItem>)Model["Filter"])
                 {
                     <tr>
                         <th scope="row">@fitem.Id</th>

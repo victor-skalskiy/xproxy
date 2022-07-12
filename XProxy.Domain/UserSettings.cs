@@ -9,7 +9,7 @@ public class UserSettings
 
     public long UpdateInterval { get; set; }
 
-    public string Av100Token { get; set; }
+    public string AV100Token { get; set; }
 
     public string XLombardAPIUrl { get; set; }
 
@@ -21,6 +21,9 @@ public class UserSettings
 
     public string XLombardSource { get; set; }
 
-    public string RequestUrl => $"{XLombardAPIUrl}/handlers/requests.ashx?operation=add&token={XLombardToken}";
-    public string RequestCommand => $"?operation=add&token={XLombardToken}";
+    public string XLombardRequestUrl => $"{XLombardAPIUrl}/handlers/requests.ashx?operation=add&token={XLombardToken}";
+    public string XLombardRequestCommand => $"?operation=add&token={XLombardToken}";
+
+    public string AV100RequestUrl(string operation, string addParameters)
+        => $"https://data.av100.ru/{operation}.ashx?key={AV100Token}&{addParameters}";
 }

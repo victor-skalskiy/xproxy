@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using System.Text;
 
 namespace XProxy.Services;
+
 public class SettingsService : ISettingsService
 {
     private readonly DataContext _context;
@@ -111,7 +112,7 @@ public class SettingsService : ISettingsService
 
         var client = _httpClientFactory.CreateClient("MyBaseClient");
 
-        var result = await client.PostAsync(userSettings.RequestUrl, new StringContent(postData, Encoding.UTF8, "application/json"));
+        var result = await client.PostAsync(userSettings.XLombardRequestUrl, new StringContent(postData, Encoding.UTF8, "application/json"));
 
 
         if (result.IsSuccessStatusCode)
@@ -119,33 +120,56 @@ public class SettingsService : ISettingsService
             var content = await result.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<XLombardResponse>(content);
         }
-        else
+
+        //TODO: log fail
+        return new XLombardResponse();
+    }
+
+    public async Task<AV100ResponseProfile> AV100RequestProfile(long userSettingsId, CancellationToken token = default)
+    {
+        var userSettingsEntity = await _context.UserSettings.Where(x => x.Id == userSettingsId).FirstOrDefaultAsync();
+        var userSettings = SettingsMapper.GetUserSettings(userSettingsEntity);
+
+        var client = _httpClientFactory.CreateClient("MyBaseClient");
+        var result = await client.PostAsync(userSettings.AV100RequestUrl("profile", string.Empty), new StringContent(string.Empty, Encoding.UTF8, "application/json"));
+
+        if (result.IsSuccessStatusCode)
         {
-            //TODO: log fail
+            var content = await result.Content.ReadAsStringAsync();
+            try
+            {
+                return JsonConvert.DeserializeObject<AV100ResponseProfile>(content);
+            }
+            catch (Exception ex)
+            {
+                //TODO: log fail
+                return new AV100ResponseProfile { Result = new AV100RsponseProfileObj { BadAccessTo = 1 } };
+            }
+
         }
 
-
+        //TODO: log fail
         return null;
     }
 
-    public async Task<Av100Filter> GetFilterItemAsync(long id, CancellationToken token = default)
+    public async Task<AV100Filter> GetFilterItemAsync(long id, CancellationToken token = default)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<ICollection<Av100FilterItem>> GetFiltersAsync(CancellationToken token = default)
+    public async Task<ICollection<AV100FilterItem>> GetFiltersAsync(CancellationToken token = default)
     {
         return await _context.AV100Filters
             //.Where(a => a.UserSettingsEntityId == UserSettingsId)
             .Select(x => SettingsMapper.GetFilterItem(x)).ToArrayAsync();
     }
 
-    public async Task<Av100Filter> CreateFilterAsync(long YearStart, string YearEnd, string PriceStart, string PriceEnd, long DistanceStart, long DistanceEnd, long CarCount, long PhoneCount, long Regionid, CancellationToken token = default)
+    public async Task<AV100Filter> CreateFilterAsync(long YearStart, string YearEnd, string PriceStart, string PriceEnd, long DistanceStart, long DistanceEnd, long CarCount, long PhoneCount, long Regionid, CancellationToken token = default)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<Av100Filter> UpdateFilterAsync(long id, long YearStart, string YearEnd, string PriceStart, string PriceEnd, long DistanceStart, long DistanceEnd, long CarCount, long PhoneCount, long Regionid, CancellationToken token = default)
+    public async Task<AV100Filter> UpdateFilterAsync(long id, long YearStart, string YearEnd, string PriceStart, string PriceEnd, long DistanceStart, long DistanceEnd, long CarCount, long PhoneCount, long Regionid, CancellationToken token = default)
     {
         throw new NotImplementedException();
     }

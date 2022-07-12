@@ -32,9 +32,13 @@ public class SettingsController : Controller
     [HttpGet]
     public async Task<IActionResult> Index()
     {
+        var userSettingsId = 1;
+
         var result = new Dictionary<string, object>();
         result.Add("Settings", await _settingsService.GetSettingsAsync(HttpContext.RequestAborted));
         result.Add("Filter", await _settingsService.GetFiltersAsync(HttpContext.RequestAborted));
+        result.Add("Status", await _settingsService.AV100RequestProfile(userSettingsId, HttpContext.RequestAborted));
+
         return View(result);
     }
 
@@ -59,7 +63,7 @@ public class SettingsController : Controller
         var result = await _settingsService.GetSettingsItemAsync(id, HttpContext.RequestAborted);
         return View("Edit", new SettingsEditModel
         {
-            Av100Token = result.Av100Token,
+            Av100Token = result.AV100Token,
             UpdateInterval = result.UpdateInterval,
             XLombardAPIUrl = result.XLombardAPIUrl,
             XLombardToken = result.XLombardToken,
@@ -85,5 +89,5 @@ public class SettingsController : Controller
 
         return result.state > 0 ? RedirectToAction("Index") : RedirectToAction("Error");
     }
-    
+
 }
