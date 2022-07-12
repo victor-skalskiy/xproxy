@@ -18,7 +18,7 @@
                 <th scope="col">XL url</th>
                 <th scope="col">AV100 API key</th>
                 <th scope="col">Interval</th>
-                <th scope="col">Edit</th>
+                <th scope="col">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -31,7 +31,7 @@
                         <td>@item.XLombardAPIUrl</td>
                         <td>@item.Av100Token</td>
                         <td>@item.UpdateInterval</td>
-                        <td>@Html.ActionLink("Edit", "Edit", "Settings", new { id = item.Id })</td>
+                        <td>@Html.ActionLink("Edit", "Edit", "Settings", new { id = item.Id }, new { @class = "btn btn-primary" })</td>
                     </tr>
                 }
             }
@@ -41,7 +41,10 @@
 }
 else
 {
-    <h2>There are no API connections, click <a href="/settings/create">Create</a> to start configuring it</h2>
+    <div class="callout callout-warning">
+        <h2>There are no API connections</h2>
+        <p>click <a href="/settings/create" class="btn btn-primary">Create</a> to start configuring it</p>
+    </div>
 }
 <br />
 @if (Model.ContainsKey("Filter") && ((ICollection<Av100FilterItem>)Model["Filter"]).Count > 0)
@@ -58,7 +61,7 @@ else
                 <th scope="col">Distance end</th>
                 <th scope="col">Car count</th>
                 <th scope="col">Phone count</th>
-                <th scope="col">Edit</th>
+                <th scope="col">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -75,7 +78,7 @@ else
                         <td>@fitem.DistanceEnd</td>
                         <td>@fitem.CarCount</td>
                         <td>@fitem.PhoneCount</td>
-                        <td>@Html.ActionLink("Edit", "Edit", "Filter", new { id = fitem.Id })</td>
+                        <td>@Html.ActionLink("Edit", "Edit", "Filter", new { id = fitem.Id }, new { @class = "btn btn-primary" })</td>
                     </tr>
                 }
             }
@@ -85,9 +88,8 @@ else
 }
 else
 {
-    <h2>There are no filter, click <a href="/filter/create">Create</a> to start configuring it</h2>
+    <div class="callout callout-warning">
+        <h2>There are no filter</h2>
+        <p>click <a href="/filter/create" class="btn btn-primary">Create</a> to start configuring it</p>
+    </div>
 }
-
-
-
-<a href="/settings/CheckConnection">Push test to XLombard</a>
