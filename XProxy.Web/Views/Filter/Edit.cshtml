@@ -1,0 +1,14 @@
+﻿@model FilterEditModel
+@{
+    ViewData["Title"] = "Edit Filter";
+}
+<h1>@ViewData["Title"]</h1>
+
+<form asp-controller="Filter" asp-action="Edit">
+
+    <partial name="_FilterPartial" model="@Model" />
+
+    <div class="form-group pt-3">
+        <button type="submit">Save</button>
+    </div>
+</form>

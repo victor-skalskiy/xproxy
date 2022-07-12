@@ -1,12 +1,13 @@
 ﻿@using XProxy.Domain;
-@model ICollection<UserSettingsItem>
+@model Dictionary<string, object>
+
 @{
     ViewData["Title"] = "Dashboard";
 }
 
 <h1>@ViewData["Title"]</h1>
 <hr style="padding-bottom: 25px;" />
-@if (Model.Count > 0)
+@if (Model.ContainsKey("Settings") && ((ICollection<UserSettingsItem>)Model["Settings"]).Count > 0)
 {
     <h2>API Settings</h2>
     <table class="table">
@@ -22,7 +23,7 @@
         </thead>
         <tbody>
             @{
-                foreach (var item in Model)
+                foreach (var item in (ICollection<UserSettingsItem>)Model["Settings"])
                 {
                     <tr>
                         <th scope="row">@item.Id</th>
@@ -40,10 +41,53 @@
 }
 else
 {
-    <h2>There are no API connections, click Create to start configuring it</h2>
+    <h2>There are no API connections, click <a href="/settings/create">Create</a> to start configuring it</h2>
+}
+<br />
+@if (Model.ContainsKey("Filter") && ((ICollection<Av100FilterItem>)Model["Filter"]).Count > 0)
+{
+    <h2>API Settings</h2>
+    <table class="table">
+        <thead class=".thead-dark">
+            <tr>
+                <th scope="col">Year start</th>
+                <th scope="col">Year end</th>
+                <th scope="col">Price start</th>
+                <th scope="col">Price end</th>
+                <th scope="col">Distance start</th>
+                <th scope="col">Distance end</th>
+                <th scope="col">Car count</th>
+                <th scope="col">Phone count</th>
+                <th scope="col">Edit</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                foreach (var fitem in (ICollection<Av100FilterItem>)Model["Filter"])
+                {
+                    <tr>
+                        <th scope="row">@fitem.Id</th>
+                        <td>@fitem.YearStart</td>
+                        <td>@fitem.YearEnd</td>
+                        <td>@fitem.PriceStart</td>
+                        <td>@fitem.PriceEnd</td>
+                        <td>@fitem.DistanceStart</td>
+                        <td>@fitem.DistanceEnd</td>
+                        <td>@fitem.CarCount</td>
+                        <td>@fitem.PhoneCount</td>
+                        <td>@Html.ActionLink("Edit", "Edit", "Filter", new { id = fitem.Id })</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+}
+else
+{
+    <h2>There are no filter, click <a href="/filter/create">Create</a> to start configuring it</h2>
 }
 
 
-<form asp-controller="Settings" asp-action="CheckConnection">
-    <button type="submit">Save</button>
-</form>
+
+<a href="/settings/CheckConnection">Push test to XLombard</a>

@@ -17,6 +17,7 @@
     <None Remove="Hangfire.MemoryStorage" />
     <None Remove="Hangfire.AspNetCore" />
     <None Remove="Microsoft.Extensions.Http.Polly" />
+    <None Remove="Views\Filter\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\XProxy.DAL\XProxy.DAL.csproj">
@@ -54,5 +55,8 @@
     <PackageReference Include="Hangfire.AspNetCore" Version="1.7.30" />
     <PackageReference Include="Hangfire" Version="1.7.30" />
     <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="6.0.6" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Views\Filter\" />
   </ItemGroup>
 </Project>

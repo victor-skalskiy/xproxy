@@ -32,8 +32,9 @@ public class SettingsController : Controller
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        var result = await _settingsService.GetSettingsAsync(HttpContext.RequestAborted);
-
+        var result = new Dictionary<string, object>();
+        result.Add("Settings", await _settingsService.GetSettingsAsync(HttpContext.RequestAborted));
+        result.Add("Filter", await _settingsService.GetFiltersAsync(HttpContext.RequestAborted));
         return View(result);
     }
 
@@ -82,7 +83,7 @@ public class SettingsController : Controller
     {
         var result = await _settingsService.XLRequest(1, HttpContext.RequestAborted);
 
-        return View("Index");
+        return result.state > 0 ? RedirectToAction("Index") : RedirectToAction("Error");
     }
     
 }

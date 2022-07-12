@@ -43,7 +43,7 @@ public class SettingsService : ISettingsService
         _context.UserSettings.Add(userSettingsEntity);
         await _context.SaveChangesAsync(token);
 
-        return UserSettingsMapper.GetUserSettings(userSettingsEntity);
+        return SettingsMapper.GetUserSettings(userSettingsEntity);
     }
 
     /// <summary>
@@ -64,12 +64,12 @@ public class SettingsService : ISettingsService
         userSettingsEntity.ModifyDate = DateTime.UtcNow;
         userSettingsEntity.XLombardFilialId = xLombardFilialId;
         userSettingsEntity.XLombardSource = xLombardSource;
-        userSettingsEntity.XLombardDealTypeId = xLombardFilialId;
+        userSettingsEntity.XLombardDealTypeId = xLombardDealTypeId;
 
         _context.UserSettings.Update(userSettingsEntity);
         await _context.SaveChangesAsync(token);
 
-        return UserSettingsMapper.GetUserSettings(userSettingsEntity);
+        return SettingsMapper.GetUserSettings(userSettingsEntity);
     }
 
     /// <summary>
@@ -77,15 +77,7 @@ public class SettingsService : ISettingsService
     /// </summary>
     public async Task<ICollection<UserSettingsItem>> GetSettingsAsync(CancellationToken token = default)
     {
-        return await _context.UserSettings.Select(x => new UserSettingsItem
-        {
-            Av100Token = x.AV100Token,
-            Id = x.Id,
-            XLombardAPIUrl = x.XLombardAPIUrl,
-            XLombardToken = x.XLombardToken,
-            UpdateInterval = x.UpdateInterval
-
-        }).ToArrayAsync();
+        return await _context.UserSettings.Select(x => SettingsMapper.GetUserSettingsItem(x)).ToArrayAsync();
     }
 
     /// <summary>
@@ -95,42 +87,66 @@ public class SettingsService : ISettingsService
     {
         return await _context.UserSettings
             .Where(x => x.Id == id)
-            .Select(z => UserSettingsMapper.GetUserSettings(z)).FirstOrDefaultAsync(token);
+            .Select(z => SettingsMapper.GetUserSettings(z)).FirstOrDefaultAsync(token);
     }
 
+    /// <summary>
+    /// Connect to XLombard
+    /// </summary>
     public async Task<XLombardResponse> XLRequest(long id, CancellationToken token = default)
     {
-        //var userSettingsEntity = await _context.UserSettings.Where(x => x.Id == id).FirstOrDefaultAsync();
+        var userSettingsEntity = await _context.UserSettings.Where(x => x.Id == id).FirstOrDefaultAsync();
 
-        //if (userSettingsEntity is null)
-        //    return null;
+        if (userSettingsEntity is null)
+            return null;
 
-        //var userSettings = UserSettingsMapper.GetUserSettings(userSettingsEntity);
+        var userSettings = SettingsMapper.GetUserSettings(userSettingsEntity);
 
-        //var request = new XLombardOrderObj()
-        //{
-        //    Source = userSettings.XLombardSource,
-        //    ClientPhone = "+79257406105",
-        //    DealTypeId = userSettings.XLombardDealTypeId,
-        //    FilialId = userSettings.XLombardFilialId
-        //};
+        var request = SettingsMapper.GetXLombardOrderObj(userSettings);
 
-        //var postData = System.Text.Json.JsonSerializer.Serialize(request);
+        request.ClientPhone = "+79257406105";
+        request.ClientName = "Василий Кузьмич";
 
-        //var client = _httpClientFactory.CreateClient("MyBaseClient");
-        //client.BaseAddress = new Uri(userSettings.XLombardAPIUrl);
-        //var result = await client.PostAsync(userSettings.RequestCommand, new StringContent(postData, Encoding.UTF8, "application/json"));
+        var postData = System.Text.Json.JsonSerializer.Serialize(request);
+
+        var client = _httpClientFactory.CreateClient("MyBaseClient");
+
+        var result = await client.PostAsync(userSettings.RequestUrl, new StringContent(postData, Encoding.UTF8, "application/json"));
 
 
-        //if (result.IsSuccessStatusCode)
-        //{
-        //    // Read all of the response and deserialise it into an instace of
-        //    // WeatherForecast class
-        //    var content = await result.Content.ReadAsStringAsync();
-        //    return JsonConvert.DeserializeObject<XLombardResponse>(content);
-        //}
-        //TODO RESOLVE IT
+        if (result.IsSuccessStatusCode)
+        {
+            var content = await result.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<XLombardResponse>(content);
+        }
+        else
+        {
+            //TODO: log fail
+        }
+
 
         return null;
+    }
+
+    public async Task<Av100Filter> GetFilterItemAsync(long id, CancellationToken token = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<ICollection<Av100FilterItem>> GetFiltersAsync(CancellationToken token = default)
+    {
+        return await _context.AV100Filters
+            //.Where(a => a.UserSettingsEntityId == UserSettingsId)
+            .Select(x => SettingsMapper.GetFilterItem(x)).ToArrayAsync();
+    }
+
+    public async Task<Av100Filter> CreateFilterAsync(long YearStart, string YearEnd, string PriceStart, string PriceEnd, long DistanceStart, long DistanceEnd, long CarCount, long PhoneCount, long Regionid, CancellationToken token = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<Av100Filter> UpdateFilterAsync(long id, long YearStart, string YearEnd, string PriceStart, string PriceEnd, long DistanceStart, long DistanceEnd, long CarCount, long PhoneCount, long Regionid, CancellationToken token = default)
+    {
+        throw new NotImplementedException();
     }
 }

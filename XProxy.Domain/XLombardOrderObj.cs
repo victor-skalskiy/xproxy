@@ -8,7 +8,11 @@ namespace XProxy.Domain
     /// </summary>
     public class XLombardOrderObj
     {
-        public XLombardOrderObj() { }
+        public XLombardOrderObj()
+        {
+            AdditionalFilials = new List<long>();
+            ClientName = "Новый лид";
+        }
 
         /// <summary>
         /// число, код филиала в который должна поступить заявка

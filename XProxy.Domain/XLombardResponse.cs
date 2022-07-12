@@ -5,7 +5,7 @@ namespace XProxy.Domain
     {
         public XLombardResponse() { }
 
-        public bool state { get; set; }
+        public long state { get; set; }
         public string error { get; set; }
         public string data { get; set; }
     }
