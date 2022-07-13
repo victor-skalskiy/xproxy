@@ -6,6 +6,7 @@ using Polly;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Text;
+using Microsoft.Extensions.Configuration;
 
 namespace XProxy.Services;
 
@@ -13,11 +14,13 @@ public class SettingsService : ISettingsService
 {
     private readonly DataContext _context;
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly bool _uplink;
 
-    public SettingsService(DataContext context, IHttpClientFactory httpClientFactory)
+    public SettingsService(DataContext context, IHttpClientFactory httpClientFactory, IConfiguration configuration)
     {
         _context = context;
         _httpClientFactory = httpClientFactory;
+        _uplink = configuration.GetSection("AppSetting").GetSection("Uplink").Value == "True";
     }
 
     /// <summary>
@@ -96,6 +99,9 @@ public class SettingsService : ISettingsService
     /// </summary>
     public async Task<XLombardResponse> XLRequest(long id, CancellationToken token = default)
     {
+        if (!_uplink)
+            return new XLombardResponse();
+
         var userSettingsEntity = await _context.UserSettings.Where(x => x.Id == id).FirstOrDefaultAsync();
 
         if (userSettingsEntity is null)
@@ -127,6 +133,9 @@ public class SettingsService : ISettingsService
 
     public async Task<AV100ResponseProfile> AV100RequestProfile(long userSettingsId, CancellationToken token = default)
     {
+        if (!_uplink)
+            return new AV100ResponseProfile();
+
         var userSettingsEntity = await _context.UserSettings.Where(x => x.Id == userSettingsId).FirstOrDefaultAsync();
         var userSettings = SettingsMapper.GetUserSettings(userSettingsEntity);
 
@@ -143,7 +152,7 @@ public class SettingsService : ISettingsService
             catch (Exception ex)
             {
                 //TODO: log fail
-                return new AV100ResponseProfile { Result = new AV100RsponseProfileObj { BadAccessTo = 1 } };
+                return new AV100ResponseProfile();
             }
 
         }

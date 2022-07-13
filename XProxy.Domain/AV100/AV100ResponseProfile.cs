@@ -7,6 +7,11 @@ namespace XProxy.Domain;
 /// </summary>
 public class AV100ResponseProfile : AV100ResponseBase
 {
+    public AV100ResponseProfile()
+    {
+        Result = new AV100RsponseProfileObj { BadAccessTo = 1 };
+    }
+
     [JsonProperty(PropertyName = "result")]
     public AV100RsponseProfileObj Result { get; set; }
 }
@@ -26,4 +31,4 @@ public class AV100RsponseProfileObj
 
     [JsonProperty(PropertyName = "accessToStr")]
     public string AccessToStr { get; set; }
-}    
+}
