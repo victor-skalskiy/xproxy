@@ -160,12 +160,9 @@ public class SettingsService : ISettingsService
         //TODO: log fail
         return null;
     }
+    
 
-    public async Task<AV100Filter> GetFilterItemAsync(long id, CancellationToken token = default)
-    {
-        throw new NotImplementedException();
-    }
-
+    // Getting list of filters, for index page
     public async Task<ICollection<AV100FilterItem>> GetFiltersAsync(CancellationToken token = default)
     {
         return await _context.AV100Filters
@@ -173,12 +170,31 @@ public class SettingsService : ISettingsService
             .Select(x => SettingsMapper.GetFilterItem(x)).ToArrayAsync();
     }
 
-    public async Task<AV100Filter> CreateFilterAsync(long YearStart, string YearEnd, string PriceStart, string PriceEnd, long DistanceStart, long DistanceEnd, long CarCount, long PhoneCount, long Regionid, CancellationToken token = default)
+    // Getting specific filter item for edit page or api requests
+    public async Task<AV100Filter> GetFilterItemAsync(long id, CancellationToken token = default)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<AV100Filter> UpdateFilterAsync(long id, long YearStart, string YearEnd, string PriceStart, string PriceEnd, long DistanceStart, long DistanceEnd, long CarCount, long PhoneCount, long Regionid, CancellationToken token = default)
+    // Creating filter
+    public async Task<AV100Filter> CreateFilterAsync(long YearStart, string YearEnd, string PriceStart, string PriceEnd,
+        long DistanceStart, long DistanceEnd, long CarCount, long PhoneCount, long Regionid, CancellationToken token = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    // Updating filter
+    public async Task<AV100Filter> UpdateFilterAsync(long id, long YearStart, string YearEnd, string PriceStart, string PriceEnd,
+        long DistanceStart, long DistanceEnd, long CarCount, long PhoneCount, long Regionid, CancellationToken token = default)
+    {
+        throw new NotImplementedException();
+    }
+
+
+
+
+    public Task<ICollection<AV100ResponseResultListOffer>> AV100GetListOffers(string key, string command, long regionId,
+        long priceStart, long remont = 0, CancellationToken token = default)
     {
         throw new NotImplementedException();
     }

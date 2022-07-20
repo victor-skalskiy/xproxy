@@ -32,7 +32,7 @@ public class FilterController : Controller
     [HttpGet]
     public async Task<IActionResult> Create()
     {
-        return View("Edit", new FilterEditModel() { });        
+        return View("Create", new FilterEditModel() { });        
     }
 
     [HttpPost]

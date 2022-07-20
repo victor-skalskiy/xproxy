@@ -20,7 +20,6 @@ namespace XProxy.Domain
         public long CarCount { get; set; }
         public long PhoneCount { get; set; }
 
-        public long regionid { get; set; }        
+        public long RegionId { get; set; }        
     }
 }
-

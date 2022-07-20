@@ -15,22 +15,12 @@ public interface ISettingsService
 
 
 
-
-    Task<AV100Filter> GetFilterItemAsync(long id, CancellationToken token = default);
-
-    Task<ICollection<AV100FilterItem>> GetFiltersAsync(CancellationToken token = default);
-
-    Task<AV100Filter> CreateFilterAsync(long YearStart, string YearEnd, string PriceStart, string PriceEnd, long DistanceStart,
-        long DistanceEnd, long CarCount, long PhoneCount, long Regionid, CancellationToken token = default);
-
-    Task<AV100Filter> UpdateFilterAsync(long id, long YearStart, string YearEnd, string PriceStart, string PriceEnd, long DistanceStart, long DistanceEnd,
-        long CarCount, long PhoneCount, long Regionid, CancellationToken token = default);
-
-
-
-
     Task<XLombardResponse> XLRequest(long id, CancellationToken token = default);
 
-    Task<AV100ResponseProfile> AV100RequestProfile(long userSettingsId, CancellationToken token = default);
-}
 
+
+    Task<AV100ResponseProfile> AV100RequestProfile(long userSettingsId, CancellationToken token = default);
+
+    Task<ICollection<AV100ResponseResultListOffer>> AV100GetListOffers(string key, string command, long regionId, long priceStart,
+        long remont = 0, CancellationToken token = default);
+}

@@ -13,12 +13,15 @@ public class SettingsController : Controller
     private readonly ILogger<SettingsController> _logger;
     private readonly ISettingsService _settingsService;
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IFiltersService _filtersService;
 
-    public SettingsController(ILogger<SettingsController> logger, ISettingsService settingsService, IHttpClientFactory httpClientFactory)
+    public SettingsController(ILogger<SettingsController> logger, ISettingsService settingsService, IHttpClientFactory httpClientFactory,
+        IFiltersService filtersService)
     {
         _settingsService = settingsService;
         _logger = logger;
         _httpClientFactory = httpClientFactory;
+        _filtersService = filtersService;
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -36,7 +39,7 @@ public class SettingsController : Controller
 
         var result = new Dictionary<string, object>();
         result.Add("Settings", await _settingsService.GetSettingsAsync(HttpContext.RequestAborted));
-        result.Add("Filter", await _settingsService.GetFiltersAsync(HttpContext.RequestAborted));
+        result.Add("Filter", await _filtersService.GetFiltersAsync(HttpContext.RequestAborted));
         result.Add("Status", await _settingsService.AV100RequestProfile(userSettingsId, HttpContext.RequestAborted));
 
         return View(result);
@@ -88,6 +91,13 @@ public class SettingsController : Controller
         var result = await _settingsService.XLRequest(1, HttpContext.RequestAborted);
 
         return result.state > 0 ? RedirectToAction("Index") : RedirectToAction("Error");
+    }
+
+    public async Task<IActionResult> TestFire()
+    {
+
+
+        return RedirectToAction("Index");
     }
 
 }
