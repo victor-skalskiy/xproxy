@@ -14,13 +14,15 @@ public class SettingsService : ISettingsService
 {
     private readonly DataContext _context;
     private readonly IHttpClientFactory _httpClientFactory;
-    private readonly bool _uplink;
+    private readonly IXProxyOptions _xProxyOptions;
 
-    public SettingsService(DataContext context, IHttpClientFactory httpClientFactory, IConfiguration configuration)
+
+    public SettingsService(DataContext context, IHttpClientFactory httpClientFactory, IConfiguration configuration,
+        IXProxyOptions xProxyOptions)
     {
         _context = context;
         _httpClientFactory = httpClientFactory;
-        _uplink = configuration.GetSection("AppSetting").GetSection("Uplink").Value == "True";
+        _xProxyOptions = xProxyOptions;
     }
 
     /// <summary>
@@ -99,7 +101,7 @@ public class SettingsService : ISettingsService
     /// </summary>
     public async Task<XLombardResponse> XLRequest(long id, CancellationToken token = default)
     {
-        if (!_uplink)
+        if (!_xProxyOptions.UpLink)
             return new XLombardResponse();
 
         var userSettingsEntity = await _context.UserSettings.Where(x => x.Id == id).FirstOrDefaultAsync();
@@ -133,7 +135,7 @@ public class SettingsService : ISettingsService
 
     public async Task<AV100ResponseProfile> AV100RequestProfile(long userSettingsId, CancellationToken token = default)
     {
-        if (!_uplink)
+        if (!_xProxyOptions.UpLink)
             return new AV100ResponseProfile();
 
         var userSettingsEntity = await _context.UserSettings.Where(x => x.Id == userSettingsId).FirstOrDefaultAsync();

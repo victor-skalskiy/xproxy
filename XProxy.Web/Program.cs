@@ -18,6 +18,7 @@ builder.Services
             .UseNpgsql(connectionString);
     })
     .AddScoped<ISettingsService, SettingsService>()
+    .AddSingleton<IXProxyOptions, XProxyOptions>()
     .AddHangfire(hangfire =>
         hangfire
             .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
