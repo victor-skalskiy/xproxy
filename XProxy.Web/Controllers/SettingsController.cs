@@ -12,13 +12,13 @@ public class SettingsController : Controller
 {
     private readonly ILogger<SettingsController> _logger;
     private readonly ISettingsService _settingsService;
-    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IHttpClientFactory _httpClientFactory;    
 
     public SettingsController(ILogger<SettingsController> logger, ISettingsService settingsService, IHttpClientFactory httpClientFactory)
     {
         _settingsService = settingsService;
         _logger = logger;
-        _httpClientFactory = httpClientFactory;
+        _httpClientFactory = httpClientFactory;        
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
