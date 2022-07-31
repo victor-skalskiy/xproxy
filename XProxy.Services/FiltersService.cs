@@ -2,44 +2,160 @@
 using XProxy.Interfaces;
 using XProxy.Domain;
 using Microsoft.EntityFrameworkCore;
-using Polly;
-using System.Net.Http;
-using Newtonsoft.Json;
-using System.Text;
-using Microsoft.Extensions.Configuration;
 
 namespace XProxy.Services;
 
 public class FiltersService : IFiltersService
 {
     private readonly DataContext _context;
-    private readonly IHttpClientFactory _httpClientFactory;
-    private readonly bool _uplink;
 
-    public FiltersService(DataContext context, IHttpClientFactory httpClientFactory, IConfiguration configuration)
+    public FiltersService(DataContext context)
     {
         _context = context;
-        _httpClientFactory = httpClientFactory;
-        _uplink = configuration.GetSection("AppSetting").GetSection("Uplink").Value == "True";
     }
 
-    public Task<AV100Filter> CreateFilterAsync(long YearStart, string YearEnd, string PriceStart, string PriceEnd, long DistanceStart, long DistanceEnd, long CarCount, long PhoneCount, long Regionid, CancellationToken token = default)
+    /// <summary>
+    /// Getting list of filters, for index page
+    /// </summary>
+    public async Task<List<AV100FilterItem>> GetFiltersAsync(CancellationToken token = default)
     {
-        throw new NotImplementedException();
+        return await _context.AV100Filters.Select(x => Mapper.GetFilterItem(x)).ToListAsync();
     }
 
-    public Task<AV100Filter> GetFilterItemAsync(long id, CancellationToken token = default)
+    /// <summary>
+    /// Getting specific filter item for edit page or api requests
+    /// </summary>
+    public async Task<AV100Filter> GetFilterAsync(long id, CancellationToken token = default)
     {
-        throw new NotImplementedException();
+        var filterEntity = await _context.AV100Filters.Where(x => x.Id == id)
+            .Include(s => s.Sources)
+            .Include(r => r.Regions)
+            .FirstOrDefaultAsync(token);
+
+        var regions = await _context.AV100Regions.Select(x => Mapper.GetRegion(x)).ToListAsync();
+        var sources = await _context.AV100Sources.Select(x => Mapper.GetSource(x)).ToListAsync();
+
+        if (filterEntity is null)
+            throw new Exception($"Can't get AV100FilterEntity by id = {id}");
+
+        return Mapper.GetFilter(filterEntity, regions, sources);
     }
 
-    public Task<ICollection<AV100FilterItem>> GetFiltersAsync(CancellationToken token = default)
+    /// <summary>
+    /// Creating filter
+    /// </summary>
+    public async Task<AV100Filter> CreateFilterAsync(long yearStart, long yearEnd, long priceStart, long priceEnd, long distanceStart,
+        long distanceEnd, long carCount, long phoneCount, List<long> regionIds, List<long> sourceIds, CancellationToken token = default)
     {
-        throw new NotImplementedException();
+        var filter = Mapper.FillFilterEntity(new AV100FilterEntity(), yearStart, yearEnd, priceStart, priceEnd, distanceStart, distanceEnd,
+            carCount, phoneCount, regionIds, sourceIds);
+
+        filter.Regions = _context.AV100Regions.Where(x => regionIds.Contains(x.Id)).ToList();
+        filter.Sources = _context.AV100Sources.Where(x => sourceIds.Contains(x.Id)).ToList();
+
+        _context.AV100Filters.Add(filter);
+        await _context.SaveChangesAsync(token);
+
+        return Mapper.GetFilter(filter, null, null);
     }
 
-    public Task<AV100Filter> UpdateFilterAsync(long id, long YearStart, string YearEnd, string PriceStart, string PriceEnd, long DistanceStart, long DistanceEnd, long CarCount, long PhoneCount, long Regionid, CancellationToken token = default)
+    /// <summary>
+    /// Updating filter
+    /// </summary>    
+    public async Task<AV100Filter> UpdateFilterAsync(long id, long yearStart, long yearEnd, long priceStart, long priceEnd, long distanceStart,
+        long distanceEnd, long carCount, long phoneCount, List<long> regionIds, List<long> sourceIds, CancellationToken token = default)
     {
-        throw new NotImplementedException();
+        var filterEntity = await _context.AV100Filters.Where(x => x.Id == id).FirstOrDefaultAsync(token);
+
+        if (filterEntity is null)
+            throw new Exception($"Can't get AV100FilterEntity by id = {id}");
+
+        filterEntity = Mapper.FillFilterEntity(filterEntity, yearStart, yearEnd, priceStart, priceEnd, distanceStart, distanceEnd,
+            carCount, phoneCount, regionIds, sourceIds);
+
+        filterEntity.Regions = _context.AV100Regions.Where(x => regionIds.Contains(x.Id)).ToList();
+
+        _context.AV100Filters.Update(filterEntity);
+        await _context.SaveChangesAsync(token);
+
+        return Mapper.GetFilter(filterEntity, null, null);
+    }
+
+    /// <summary>
+    /// Get list of source items for controls
+    /// </summary>
+    public async Task<ICollection<AV100Source>> GetSourcesAsync(CancellationToken token = default)
+    {
+        return await _context.AV100Sources.Select(x => Mapper.GetSource(x)).ToListAsync();
+    }
+
+    /// <summary>
+    /// Create Source 
+    /// </summary>
+    public async Task<AV100Source> CreateSourceAsync(long id, string name, CancellationToken token = default)
+    {
+        var sourceEntity = new AV100SourceEntity() { Id = id, Name = name };
+
+        _context.AV100Sources.Add(sourceEntity);
+        await _context.SaveChangesAsync(token);
+
+        return Mapper.GetSource(sourceEntity);
+    }
+
+    /// <summary>
+    /// Get list of Region for controls
+    /// </summary>
+    public async Task<ICollection<AV100Region>> GetRegionsAsync(CancellationToken token = default)
+    {
+        return await _context.AV100Regions.Select(x => Mapper.GetRegion(x)).ToListAsync();
+    }
+
+    /// <summary>
+    /// Create Region 
+    /// </summary>
+    public async Task<AV100Region> CreateRegionAsync(long id, string name, CancellationToken token = default)
+    {
+        var regionEntity = new AV100RegionEntity() { Id = id, Name = name };
+
+        _context.AV100Regions.Add(regionEntity);
+        await _context.SaveChangesAsync(token);
+
+        return Mapper.GetRegion(regionEntity);
+    }
+
+    /// <summary>
+    /// Create lot of Regions
+    /// </summary>
+    public async Task<ICollection<AV100Region>> CreateRegionsAsync(Dictionary<long, string> data, CancellationToken token = default)
+    {
+        var exists = await _context.AV100Regions.Select(x => Mapper.GetRegion(x)).ToDictionaryAsync(z => z.RegionId, z => z.Name);
+        foreach (var item in data)
+        {
+            if (exists.ContainsKey(item.Key))
+                continue;
+
+            _context.AV100Regions.Add(new AV100RegionEntity { AV100RegionId = item.Key, Name = item.Value });
+        }
+        await _context.SaveChangesAsync(token);
+
+        return await _context.AV100Regions.Select(x => Mapper.GetRegion(x)).ToArrayAsync();
+    }
+
+    /// <summary>
+    /// Create a log of Sources
+    /// </summary>
+    public async Task<ICollection<AV100Source>> CreateSourcesAsync(Dictionary<long, string> data, CancellationToken token = default)
+    {
+        var exists = await _context.AV100Sources.Select(x => Mapper.GetSource(x)).ToDictionaryAsync(z => z.SourceId, z => z.Name);
+        foreach (var item in data)
+        {
+            if (exists.ContainsKey(item.Key))
+                continue;
+
+            _context.AV100Sources.Add(new AV100SourceEntity { AV100SourceId = item.Key, Name = item.Value });
+        }
+        await _context.SaveChangesAsync(token);
+
+        return await _context.AV100Sources.Select(x => Mapper.GetSource(x)).ToArrayAsync();
     }
 }

@@ -5,6 +5,8 @@ using XProxy.Interfaces;
 using Polly;
 using System;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Linq;
 
 namespace XProxy.Web.Controllers;
 
@@ -12,13 +14,13 @@ public class FilterController : Controller
 {
     private readonly ILogger<SettingsController> _logger;
     private readonly ISettingsService _settingsService;
-    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IFiltersService _filtersService;
 
-    public FilterController(ILogger<SettingsController> logger, ISettingsService settingsService, IHttpClientFactory httpClientFactory)
+    public FilterController(ILogger<SettingsController> logger, ISettingsService settingsService, IFiltersService filtersService)
     {
         _settingsService = settingsService;
         _logger = logger;
-        _httpClientFactory = httpClientFactory;
+        _filtersService = filtersService;
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -27,48 +29,61 @@ public class FilterController : Controller
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 
+    private async void AddViewBagOptions()
+    {
+        ViewBag.Regions = await _filtersService.GetRegionsAsync(HttpContext.RequestAborted);
+        ViewBag.Sources = new SelectList(await _filtersService.GetSourcesAsync(HttpContext.RequestAborted), "Id", "Name");
+    }
 
 
     [HttpGet]
     public async Task<IActionResult> Create()
     {
-        return View("Create", new FilterEditModel() { });        
+        AddViewBagOptions();
+
+        return View("Create", new FilterEditModel() { });
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(SettingsEditModel model)
+    public async Task<IActionResult> Create(FilterEditModel model)
     {
-        //var resutl = await _settingsService.CreateUserSettingsAsync(model.UpdateInterval, model.Av100Token, model.XLombardAPIUrl, model.XLombardToken,
-        //    model.XLombardFilialId, model.XLombardDealTypeId, model.XLombardSource, HttpContext.RequestAborted);
+        var result = await _filtersService.CreateFilterAsync(model.YearStart, model.YearEnd, model.PriceStart, model.PriceEnd,
+            model.DistanceStart, model.DistanceEnd, model.CarCount, model.PhoneCount, model.RegionIds, model.SourceIds,
+            HttpContext.RequestAborted);
 
-        //return RedirectToAction("Index");
-        return View();
+        return Redirect("/");
     }
 
     [HttpGet]
     public async Task<IActionResult> Edit(long id)
     {
-        //var result = await _settingsService.GetSettingsItemAsync(id, HttpContext.RequestAborted);
-        //return View("Edit", new SettingsEditModel
-        //{
-        //    Av100Token = result.Av100Token,
-        //    UpdateInterval = result.UpdateInterval,
-        //    XLombardAPIUrl = result.XLombardAPIUrl,
-        //    XLombardToken = result.XLombardToken,
-        //    XLombardDealTypeId = result.XLombardDealTypeId,
-        //    XLombardFilialId = result.XLombardFilialId,
-        //    XLombardSource = result.XLombardSource
-        //});
-        return View();
+        var model = await _filtersService.GetFilterAsync(id, HttpContext.RequestAborted);
+
+        ViewBag.Regions = model.AllRegions;
+        ViewBag.Sources = model.AllSources;
+
+        return View("Edit", new FilterEditModel
+        {
+            YearStart = model.YearStart,
+            YearEnd = model.YearEnd,
+            PriceStart = model.PriceStart,
+            PriceEnd = model.PriceEnd,
+            DistanceStart = model.DistanceStart,
+            DistanceEnd = model.DistanceEnd,
+            CarCount = model.CarCount,
+            PhoneCount = model.PhoneCount,
+            RegionIds = model.RegionIds,
+            SourceIds = model.SourceIds
+        });
     }
 
     [HttpPost]
-    public async Task<IActionResult> Edit(SettingsEditModel model, long id)
+    public async Task<IActionResult> Edit(FilterEditModel model, long id)
     {
-        //var resutl = await _settingsService.UpdateUserSettingsAsync(id, model.UpdateInterval, model.Av100Token, model.XLombardAPIUrl, model.XLombardToken,
-        //    model.XLombardFilialId, model.XLombardDealTypeId, model.XLombardSource, HttpContext.RequestAborted);
+        var result = await _filtersService.UpdateFilterAsync(id, model.YearStart, model.YearEnd, model.PriceStart, model.PriceEnd,
+            model.DistanceStart, model.DistanceEnd, model.CarCount, model.PhoneCount, model.RegionIds, model.SourceIds,
+            HttpContext.RequestAborted);
 
-        //return RedirectToAction("Index");
-        return View();
-    }    
+        return Redirect("/");
+    }
 }

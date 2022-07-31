@@ -18,6 +18,8 @@ builder.Services
             .UseNpgsql(connectionString);
     })
     .AddScoped<ISettingsService, SettingsService>()
+    .AddScoped<IFiltersService, FiltersService>()
+    .AddScoped<IExchangeService, ExchangeService>()
     .AddSingleton<IXProxyOptions, XProxyOptions>()
     .AddHangfire(hangfire =>
         hangfire

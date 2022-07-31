@@ -1,5 +1,4 @@
-﻿using System;
-namespace XProxy.DAL;
+﻿namespace XProxy.DAL;
 
 public class AV100RecordEntity : BaseEntityEntity
 {

@@ -12,16 +12,16 @@ public class SettingsController : Controller
 {
     private readonly ILogger<SettingsController> _logger;
     private readonly ISettingsService _settingsService;
-    private readonly IHttpClientFactory _httpClientFactory;
     private readonly IFiltersService _filtersService;
+    private readonly IExchangeService _exchangeService;
 
-    public SettingsController(ILogger<SettingsController> logger, ISettingsService settingsService, IHttpClientFactory httpClientFactory,
-        IFiltersService filtersService)
+    public SettingsController(ILogger<SettingsController> logger, ISettingsService settingsService, IFiltersService filtersService,
+        IExchangeService exchangeService)
     {
         _settingsService = settingsService;
         _logger = logger;
-        _httpClientFactory = httpClientFactory;
         _filtersService = filtersService;
+        _exchangeService = exchangeService;
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -37,18 +37,18 @@ public class SettingsController : Controller
     {
         var userSettingsId = 1;
 
-        var result = new Dictionary<string, object>();
-        result.Add("Settings", await _settingsService.GetSettingsAsync(HttpContext.RequestAborted));
-        result.Add("Filter", await _filtersService.GetFiltersAsync(HttpContext.RequestAborted));
-        result.Add("Status", await _settingsService.AV100RequestProfile(userSettingsId, HttpContext.RequestAborted));
-
-        return View(result);
+        return View(new IndexModel
+        {
+            Settings = await _settingsService.GetSettingsAsync(HttpContext.RequestAborted),
+            Filters = await _filtersService.GetFiltersAsync(HttpContext.RequestAborted),
+            Profile = await _exchangeService.AV100RequestProfile(userSettingsId, HttpContext.RequestAborted)
+        });
     }
 
     [HttpGet]
     public async Task<IActionResult> Create()
     {
-        return View("Edit", new SettingsEditModel() { });
+        return View("Create", new SettingsEditModel() { });
     }
 
     [HttpPost]
@@ -57,7 +57,7 @@ public class SettingsController : Controller
         var resutl = await _settingsService.CreateUserSettingsAsync(model.UpdateInterval, model.Av100Token, model.XLombardAPIUrl, model.XLombardToken,
             model.XLombardFilialId, model.XLombardDealTypeId, model.XLombardSource, HttpContext.RequestAborted);
 
-        return RedirectToAction("Index");
+        return Redirect("/");
     }
 
     [HttpGet]
@@ -88,16 +88,22 @@ public class SettingsController : Controller
     [HttpGet]
     public async Task<IActionResult> CheckConnection()
     {
-        var result = await _settingsService.XLRequest(1, HttpContext.RequestAborted);
+        var result = await _exchangeService.XLRequest(1, HttpContext.RequestAborted);
 
         return result.state > 0 ? RedirectToAction("Index") : RedirectToAction("Error");
     }
 
-    public async Task<IActionResult> TestFire()
+    [HttpGet]
+    public async Task<IActionResult> LoadDictionaries()
     {
+        var regions = await _exchangeService.AV100RequestRegions(HttpContext.RequestAborted);
+        if (regions is not null)
+            await _filtersService.CreateRegionsAsync(regions.ToDictionary(z => z.RegionId, z => z.Name), HttpContext.RequestAborted);
 
+        var sources = await _exchangeService.AV100RequestSource(HttpContext.RequestAborted);
+        if (sources is not null)
+            await _filtersService.CreateSourcesAsync(sources.ToDictionary(z => z.SourceId, z => z.Name), HttpContext.RequestAborted);
 
         return RedirectToAction("Index");
     }
-
 }

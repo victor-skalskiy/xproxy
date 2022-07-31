@@ -1,14 +1,15 @@
-﻿using System;
-namespace XProxy.DAL
-{
-    /// <summary>
-    /// https://data.av100.ru/dictionaries.ashx?key=APIKEY&methodname=offerssource
-    /// </summary>
-    public class AV100SourceEntity : BaseEntityEntity
-    {
-        public AV100SourceEntity() { }
+﻿namespace XProxy.DAL;
 
-        public long SourceId { get; set; }
-        public string SourceName { get; set; }
-    }
+/// <summary>
+/// https://data.av100.ru/dictionaries.ashx?key=APIKEY&methodname=offerssource
+/// </summary>
+public class AV100SourceEntity : BaseEntityEntity
+{
+    public AV100SourceEntity() { }
+
+    public long AV100SourceId { get; set; }
+    public string Name { get; set; }
+
+    public ICollection<AV100FilterEntity> Filters { get; set; }
+    
 }

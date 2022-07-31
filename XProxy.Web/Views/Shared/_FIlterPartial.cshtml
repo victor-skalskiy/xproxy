@@ -1,71 +1,69 @@
 ﻿@model FilterEditModel
 
-<div class="row">
+<div class="row g-3">
     <div class="form-group col-md-6">
-        <label asp-for="@Model.YearStart"></label>
-        <input asp-for="@Model.YearStart" class="form-control" />
+        <label class="form-label" asp-for="@Model.YearStart"></label>
+        <input class="form-control" asp-for="@Model.YearStart" />
         <span asp-validation-for="@Model.YearStart" class="text-danger"></span>
     </div>
     <div class="form-group col-md-6">
-        <label asp-for="@Model.YearEnd"></label>
-        <input asp-for="@Model.YearEnd" class="form-control" />
+        <label class="form-label" asp-for="@Model.YearEnd"></label>
+        <input class="form-control" asp-for="@Model.YearEnd" />
         <span asp-validation-for="@Model.YearEnd" class="text-danger"></span>
     </div>
-</div>
 
-<div class="row">
     <div class="form-group col-md-6">
-        <label asp-for="@Model.PriceStart"></label>
-        <input asp-for="@Model.PriceStart" class="form-control" />
+        <label class="form-label" asp-for="@Model.PriceStart"></label>
+        <input class="form-control" asp-for="@Model.PriceStart" />
         <span asp-validation-for="@Model.PriceStart" class="text-danger"></span>
     </div>
     <div class="form-group col-md-6">
-        <label asp-for="@Model.PriceEnd"></label>
-        <input asp-for="@Model.PriceEnd" class="form-control" />
+        <label class="form-label" asp-for="@Model.PriceEnd"></label>
+        <input class="form-control" asp-for="@Model.PriceEnd" />
         <span asp-validation-for="@Model.PriceEnd" class="text-danger"></span>
     </div>
-</div>
 
-<div class="row">
     <div class="form-group col-md-6">
-        <label asp-for="@Model.DistanceStart"></label>
-        <input asp-for="@Model.DistanceStart" class="form-control" />
+        <label class="form-label" asp-for="@Model.DistanceStart"></label>
+        <input class="form-control" asp-for="@Model.DistanceStart" />
         <span asp-validation-for="@Model.DistanceStart" class="text-danger"></span>
     </div>
     <div class="form-group col-md-6">
-        <label asp-for="@Model.DistanceEnd"></label>
-        <input asp-for="@Model.DistanceEnd" class="form-control" />
+        <label class="form-label" asp-for="@Model.DistanceEnd"></label>
+        <input class="form-control" asp-for="@Model.DistanceEnd" />
         <span asp-validation-for="@Model.DistanceEnd" class="text-danger"></span>
     </div>
-</div>
 
-<div class="row">
     <div class="form-group col-md-6">
-        <label asp-for="@Model.DistanceStart"></label>
-        <input asp-for="@Model.DistanceStart" class="form-control" />
+        <label class="form-label" asp-for="@Model.DistanceStart"></label>
+        <input class="form-control" asp-for="@Model.DistanceStart" />
         <span asp-validation-for="@Model.DistanceStart" class="text-danger"></span>
     </div>
     <div class="form-group col-md-6">
-        <label asp-for="@Model.DistanceEnd"></label>
-        <input asp-for="@Model.DistanceEnd" class="form-control" />
+        <label class="form-label" asp-for="@Model.DistanceEnd"></label>
+        <input class="form-control" asp-for="@Model.DistanceEnd" />
         <span asp-validation-for="@Model.DistanceEnd" class="text-danger"></span>
     </div>
-</div>
 
-<div class="row">
     <div class="form-group col-md-6">
-        <label asp-for="@Model.CarCount"></label>
-        <input asp-for="@Model.CarCount" class="form-control" />
+        <label class="form-label" asp-for="@Model.CarCount"></label>
+        <input class="form-control" asp-for="@Model.CarCount" />
         <span asp-validation-for="@Model.CarCount" class="text-danger"></span>
     </div>
-    <div class="form-group col-md-4">
-        <label asp-for="@Model.PhoneCount"></label>
-        <input asp-for="@Model.PhoneCount" class="form-control" />
+    <div class="form-group col-md-6">
+        <label class="form-label" asp-for="@Model.PhoneCount"></label>
+        <input class="form-control" asp-for="@Model.PhoneCount" />
         <span asp-validation-for="@Model.PhoneCount" class="text-danger"></span>
     </div>
-    <div class="form-group col-md-2">
-        <label asp-for="@Model.Regionid"></label>
-        <input asp-for="@Model.Regionid" class="form-control" />
-        <span asp-validation-for="@Model.Regionid" class="text-danger"></span>
+    <div class="form-group col-md-12">
+        <label class="form-label" asp-for="@Model.RegionIds"></label>
+        @Html.DropDownListFor(Model => Model.RegionIds, new MultiSelectList(ViewBag.Regions, "Id", "Name"), null, new { @multiple = "multiple", @class = "form-control" })
+        <span asp-validation-for="@Model.RegionIds" class="text-danger"></span>
+    </div>
+
+    <div class="form-group col-md-12">
+        <label class="form-label" asp-for="@Model.SourceIds"></label>
+        @Html.DropDownListFor(Model => Model.SourceIds, new MultiSelectList(ViewBag.Sources, "Id", "Name"), null, new { @multiple = "multiple", @class = "form-control" })
+        <span asp-validation-for="@Model.SourceIds" class="text-danger"></span>
     </div>
 </div>

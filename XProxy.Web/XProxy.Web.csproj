@@ -18,6 +18,7 @@
     <None Remove="Hangfire.AspNetCore" />
     <None Remove="Microsoft.Extensions.Http.Polly" />
     <None Remove="Views\Filter\" />
+    <None Remove="jQuery" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\XProxy.DAL\XProxy.DAL.csproj">
@@ -53,10 +54,19 @@
     <PackageReference Include="Hangfire.Core" Version="1.7.30" />
     <PackageReference Include="Hangfire.MemoryStorage" Version="1.7.0" />
     <PackageReference Include="Hangfire.AspNetCore" Version="1.7.30" />
-    <PackageReference Include="Hangfire" Version="1.7.30" />
     <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="6.0.6" />
+    <PackageReference Include="jQuery" Version="3.6.0" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Filter\" />
+    <Folder Include="wwwroot\lib\jquery\dist\" />
+    <Folder Include="wwwroot\lib\" />
+    <Folder Include="wwwroot\lib\" />
+    <Folder Include="wwwroot\lib\bootstrap\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="wwwroot\lib\jquery\dist\" />
+    <Content Remove="wwwroot\lib\" />
+    <Content Remove="wwwroot\lib\bootstrap\" />
   </ItemGroup>
 </Project>

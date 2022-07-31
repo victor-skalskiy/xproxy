@@ -25,7 +25,10 @@ namespace XProxy.Web.Models
         [Display(Name = "Adv count on phone"), Required(ErrorMessage = "field is required")]
         public long PhoneCount { get; set; }
 
-        [Display(Name = "Region"), Required(ErrorMessage = "field is required")]
-        public long Regionid { get; set; }
+        [Display(Name = "Regions"), Required(ErrorMessage = "field is required")]
+        public List<long> RegionIds { get; set; }
+
+        [Display(Name = "Sources"), Required(ErrorMessage = "field is required")]
+        public List<long> SourceIds { get; set; }
     }
 }
