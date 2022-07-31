@@ -1,5 +1,4 @@
-﻿using System;
-namespace XProxy.Domain;
+﻿namespace XProxy.Domain;
 
 /// <summary>
 /// Card element, working in BL
@@ -9,5 +8,4 @@ public class AV100Region
     public long Id { get; set; }
     public long RegionId { get; set; }
     public string Name { get; set; }
-    
 }

@@ -1,5 +1,5 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace XProxy.Web.Models
 {
@@ -26,9 +26,13 @@ namespace XProxy.Web.Models
         public long PhoneCount { get; set; }
 
         [Display(Name = "Regions"), Required(ErrorMessage = "field is required")]
-        public List<long> RegionIds { get; set; }
+        public long[] RegionIds { get; set; } = Array.Empty<long>();
 
         [Display(Name = "Sources"), Required(ErrorMessage = "field is required")]
-        public List<long> SourceIds { get; set; }
+        public long[] SourceIds { get; set; } = Array.Empty<long>();
+        
+        public MultiSelectList? Regions { get; set; }
+        
+        public MultiSelectList? Sources { get; set; }
     }
 }

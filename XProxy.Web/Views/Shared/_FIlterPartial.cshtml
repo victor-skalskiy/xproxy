@@ -56,14 +56,16 @@
         <span asp-validation-for="@Model.PhoneCount" class="text-danger"></span>
     </div>
     <div class="form-group col-md-12">
+        <input type="hidden" value="@string.Join(",", Model.RegionIds)" id="region-select2-values"/>
         <label class="form-label" asp-for="@Model.RegionIds"></label>
-        @Html.DropDownListFor(Model => Model.RegionIds, new MultiSelectList(ViewBag.Regions, "Id", "Name"), null, new { @multiple = "multiple", @class = "form-control" })
+        @Html.DropDownListFor(m => m.RegionIds, Model.Regions, null, new { @multiple = "multiple", @class = "form-control" })
         <span asp-validation-for="@Model.RegionIds" class="text-danger"></span>
     </div>
 
     <div class="form-group col-md-12">
+        <input type="hidden" value="@string.Join(",", Model.SourceIds)" id="source-select2-values"/>
         <label class="form-label" asp-for="@Model.SourceIds"></label>
-        @Html.DropDownListFor(Model => Model.SourceIds, new MultiSelectList(ViewBag.Sources, "Id", "Name"), null, new { @multiple = "multiple", @class = "form-control" })
+        @Html.DropDownListFor(m => m.SourceIds, Model.Sources, null, new { @multiple = "multiple", @class = "form-control" })
         <span asp-validation-for="@Model.SourceIds" class="text-danger"></span>
     </div>
 </div>

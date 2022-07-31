@@ -65,7 +65,10 @@ public class FiltersService : IFiltersService
     public async Task<AV100Filter> UpdateFilterAsync(long id, long yearStart, long yearEnd, long priceStart, long priceEnd, long distanceStart,
         long distanceEnd, long carCount, long phoneCount, List<long> regionIds, List<long> sourceIds, CancellationToken token = default)
     {
-        var filterEntity = await _context.AV100Filters.Where(x => x.Id == id).FirstOrDefaultAsync(token);
+        var filterEntity = await _context.AV100Filters
+            .Include(x => x.Regions)
+            .Include(x => x.Sources)
+            .Where(x => x.Id == id).FirstOrDefaultAsync(token);
 
         if (filterEntity is null)
             throw new Exception($"Can't get AV100FilterEntity by id = {id}");
@@ -74,6 +77,8 @@ public class FiltersService : IFiltersService
             carCount, phoneCount, regionIds, sourceIds);
 
         filterEntity.Regions = _context.AV100Regions.Where(x => regionIds.Contains(x.Id)).ToList();
+        
+        filterEntity.Sources = _context.AV100Sources.Where(x => sourceIds.Contains(x.Id)).ToList();
 
         _context.AV100Filters.Update(filterEntity);
         await _context.SaveChangesAsync(token);

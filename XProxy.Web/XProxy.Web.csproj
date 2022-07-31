@@ -21,20 +21,15 @@
     <None Remove="jQuery" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\XProxy.DataMigration\XProxy.DataMigration.csproj">
-      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    <ProjectReference Include="..\XProxy.DAL\XProxy.DAL.csproj">
     </ProjectReference>
     <ProjectReference Include="..\XProxy.Domain\XProxy.Domain.csproj">
-      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
     <ProjectReference Include="..\XProxy.Interfaces\XProxy.Interfaces.csproj">
-      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
     <ProjectReference Include="..\XProxy.Services\XProxy.Services.csproj">
-      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
     <ProjectReference Include="..\XProxy.DAL\XProxy.DAL.csproj">
-      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
