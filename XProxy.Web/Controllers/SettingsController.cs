@@ -2,9 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using XProxy.Web.Models;
 using XProxy.Interfaces;
-using Polly;
-using System;
-using Newtonsoft.Json;
 
 namespace XProxy.Web.Controllers;
 
@@ -13,15 +10,18 @@ public class SettingsController : Controller
     private readonly ILogger<SettingsController> _logger;
     private readonly ISettingsService _settingsService;
     private readonly IFiltersService _filtersService;
-    private readonly IExchangeService _exchangeService;
+    private readonly IExchangeServiceFactory _exchangeServiceFactory;
 
-    public SettingsController(ILogger<SettingsController> logger, ISettingsService settingsService, IFiltersService filtersService,
-        IExchangeService exchangeService)
+    public SettingsController(
+        ISettingsService settingsService,
+        IFiltersService filtersService,
+        IExchangeServiceFactory exchangeServiceFactory,
+        ILogger<SettingsController> logger)
     {
         _settingsService = settingsService;
         _logger = logger;
         _filtersService = filtersService;
-        _exchangeService = exchangeService;
+        _exchangeServiceFactory = exchangeServiceFactory;
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -36,19 +36,19 @@ public class SettingsController : Controller
     public async Task<IActionResult> Index()
     {
         var userSettingsId = 1;
-
+        var exchangeService = await _exchangeServiceFactory.CreateAsync(userSettingsId);
         return View(new IndexModel
         {
             Settings = await _settingsService.GetSettingsAsync(HttpContext.RequestAborted),
             Filters = await _filtersService.GetFiltersAsync(HttpContext.RequestAborted),
-            Profile = await _exchangeService.AV100RequestProfile(userSettingsId, HttpContext.RequestAborted)
+            Profile = await exchangeService.AV100RequestProfile(userSettingsId, HttpContext.RequestAborted)
         });
     }
 
     [HttpGet]
     public async Task<IActionResult> Create()
     {
-        return View("Create", new SettingsEditModel() { });
+        return View("Create", new SettingsEditModel());
     }
 
     [HttpPost]
@@ -88,19 +88,21 @@ public class SettingsController : Controller
     [HttpGet]
     public async Task<IActionResult> CheckConnection()
     {
-        var result = await _exchangeService.XLRequest(1, HttpContext.RequestAborted);
-
+        var exchangeService = await _exchangeServiceFactory.CreateAsync(1);
+        var result = await exchangeService.XLRequest(1, HttpContext.RequestAborted);
         return result.state > 0 ? RedirectToAction("Index") : RedirectToAction("Error");
     }
 
     [HttpGet]
     public async Task<IActionResult> LoadDictionaries()
     {
-        var regions = await _exchangeService.AV100RequestRegions(HttpContext.RequestAborted);
+        var exchangeService = await _exchangeServiceFactory.CreateDefaultAsync();
+        
+        var regions = await exchangeService.AV100RequestRegions(HttpContext.RequestAborted);
         if (regions is not null)
             await _filtersService.CreateRegionsAsync(regions.ToDictionary(z => z.RegionId, z => z.Name), HttpContext.RequestAborted);
 
-        var sources = await _exchangeService.AV100RequestSource(HttpContext.RequestAborted);
+        var sources = await exchangeService.AV100RequestSource(HttpContext.RequestAborted);
         if (sources is not null)
             await _filtersService.CreateSourcesAsync(sources.ToDictionary(z => z.SourceId, z => z.Name), HttpContext.RequestAborted);
 

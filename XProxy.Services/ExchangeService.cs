@@ -1,38 +1,26 @@
-﻿using XProxy.DAL;
-using XProxy.Interfaces;
+﻿using XProxy.Interfaces;
 using XProxy.Domain;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Text;
 
 namespace XProxy.Services;
 
-public class ExchangeService : IExchangeService
+public sealed class ExchangeService : IExchangeService
 {
-    private readonly DataContext _context;
-    private readonly IHttpClientFactory _httpClientFactory;
-    private readonly IXProxyOptions _xProxyOptions;
+    private const string HttpClientName = "MyBaseClient";
+    private const string JsonContentType = "application/json";
     private readonly UserSettings _userSettings;
+    private readonly ExchangeServiceOptions _options;
+    private readonly IHttpClientFactory _httpClientFactory;
 
-
-    public ExchangeService(DataContext context, IHttpClientFactory httpClientFactory, IXProxyOptions xProxyOptions)
+    public ExchangeService(
+        UserSettings userSettings,
+        ExchangeServiceOptions options,
+        IHttpClientFactory httpClientFactory)
     {
-        _context = context;
+        _userSettings = userSettings;
+        _options = options;
         _httpClientFactory = httpClientFactory;
-        _xProxyOptions = xProxyOptions;
-        _userSettings = InitUserSettings();
-    }
-
-    private UserSettings InitUserSettings()
-    {
-        if (_xProxyOptions.UpLink)
-        {
-            var userSettingsEntity = _context.UserSettings.Where(x => x.Id == _xProxyOptions.DefaultUserSettingsId).FirstOrDefault();
-            if (userSettingsEntity != null)
-                return Mapper.GetUserSettings(userSettingsEntity);
-        }
-
-        return null;
     }
 
     /// <summary>
@@ -40,10 +28,6 @@ public class ExchangeService : IExchangeService
     /// </summary>
     public async Task<XLombardResponse> XLRequest(long id, CancellationToken token = default)
     {
-        if (!_xProxyOptions.UpLink)
-            return new XLombardResponse();
-
-
         var request = Mapper.GetXLombardOrderObj(_userSettings);
 
         request.ClientPhone = "+79257406105";
@@ -51,14 +35,16 @@ public class ExchangeService : IExchangeService
 
         var postData = System.Text.Json.JsonSerializer.Serialize(request);
 
-        var client = _httpClientFactory.CreateClient("MyBaseClient");
+        var client = _httpClientFactory.CreateClient(HttpClientName);
 
-        var result = await client.PostAsync(_userSettings.XLombardRequestUrl, new StringContent(postData, Encoding.UTF8, "application/json"));
-
-
+        var result = await client.PostAsync(
+            _userSettings.XLombardRequestUrl, 
+            CreateContent(postData),
+            token);
+        
         if (result.IsSuccessStatusCode)
         {
-            var content = await result.Content.ReadAsStringAsync();
+            var content = await result.Content.ReadAsStringAsync(token);
             return JsonConvert.DeserializeObject<XLombardResponse>(content);
         }
 
@@ -68,15 +54,15 @@ public class ExchangeService : IExchangeService
 
     public async Task<AV100ResponseProfile> AV100RequestProfile(long userSettingsId, CancellationToken token = default)
     {
-        if (!_xProxyOptions.UpLink)
-            return new AV100ResponseProfile();
-
-        var client = _httpClientFactory.CreateClient("MyBaseClient");
-        var result = await client.PostAsync(_userSettings.AV100RequestUrl("profile", string.Empty), new StringContent(string.Empty, Encoding.UTF8, "application/json"));
+        var client = _httpClientFactory.CreateClient(HttpClientName);
+        var result = await client.PostAsync(
+            _userSettings.AV100RequestUrl("profile", string.Empty),
+            CreateContent(string.Empty),
+            token);
 
         if (result.IsSuccessStatusCode)
         {
-            var content = await result.Content.ReadAsStringAsync();
+            var content = await result.Content.ReadAsStringAsync(token);
             try
             {
                 return JsonConvert.DeserializeObject<AV100ResponseProfile>(content);
@@ -86,7 +72,6 @@ public class ExchangeService : IExchangeService
                 //TODO: log fail
                 return new AV100ResponseProfile();
             }
-
         }
 
         //TODO: log fail
@@ -115,17 +100,15 @@ public class ExchangeService : IExchangeService
     /// </summary>
     public async Task<ICollection<AV100Region>> AV100RequestRegions(CancellationToken token = default)
     {
-        if (!_xProxyOptions.UpLink)
-            return null;
-
-        var client = _httpClientFactory.CreateClient("MyBaseClient");
+        var client = _httpClientFactory.CreateClient(HttpClientName);
         var result = await client.PostAsync(
-            _userSettings.AV100RequestUrl(_xProxyOptions.AV100DictionaryAPIOperation, _xProxyOptions.AV100RegionAPIParameters),
-            new StringContent(string.Empty, Encoding.UTF8, "application/json"));
+            _userSettings.AV100RequestUrl(_options.AV100DictionaryAPIOperation, _options.AV100RegionAPIParameters),
+            CreateContent(string.Empty),
+            token);
 
         if (result.IsSuccessStatusCode)
         {
-            var content = await result.Content.ReadAsStringAsync();
+            var content = await result.Content.ReadAsStringAsync(token);
             var response = JsonConvert.DeserializeObject<AV100ResponseRegion>(content) ?? new AV100ResponseRegion();
             var regionList = response.Result.Regions.Select(x => new AV100Region
             {
@@ -144,22 +127,25 @@ public class ExchangeService : IExchangeService
     /// </summary>
     public async Task<ICollection<AV100Source>> AV100RequestSource(CancellationToken token = default)
     {
-        if (!_xProxyOptions.UpLink)
-            return null;
-
-        var client = _httpClientFactory.CreateClient("MyBaseClient");
+        var client = _httpClientFactory.CreateClient(HttpClientName);
         var result = await client.PostAsync(
-            _userSettings.AV100RequestUrl(_xProxyOptions.AV100DictionaryAPIOperation, _xProxyOptions.AV100SourceAPIParameters),
-            new StringContent(string.Empty, Encoding.UTF8, "application/json"));
+            _userSettings.AV100RequestUrl(_options.AV100DictionaryAPIOperation, _options.AV100SourceAPIParameters),
+            CreateContent(string.Empty),
+            token);
 
         if (result.IsSuccessStatusCode)
         {
-            var content = await result.Content.ReadAsStringAsync();
+            var content = await result.Content.ReadAsStringAsync(token);
             var response = JsonConvert.DeserializeObject<AV100ResponseSource>(content) ?? new AV100ResponseSource();
-            return response.Result.Sources.Select(x => Mapper.GetSource(x)).ToArray();
+            return response.Result.Sources.Select(Mapper.GetSource).ToArray();
         }
 
         //TODO: log fail
         return null;
+    }
+
+    private static StringContent CreateContent(string content)
+    {
+        return new StringContent(content, Encoding.UTF8, JsonContentType);
     }
 }
