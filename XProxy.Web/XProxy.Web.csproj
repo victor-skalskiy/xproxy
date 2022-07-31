@@ -21,9 +21,6 @@
     <None Remove="jQuery" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\XProxy.DAL\XProxy.DAL.csproj">
-      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
-    </ProjectReference>
     <ProjectReference Include="..\XProxy.DataMigration\XProxy.DataMigration.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
