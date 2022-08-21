@@ -20,10 +20,4 @@ public class UserSettings
     public long XLombardDealTypeId { get; set; }
 
     public string XLombardSource { get; set; }
-
-    public string XLombardRequestUrl => $"{XLombardAPIUrl}/handlers/requests.ashx?operation=add&token={XLombardToken}";
-    public string XLombardRequestCommand => $"?operation=add&token={XLombardToken}";
-
-    public string AV100RequestUrl(string operation, string addParameters)
-        => $"https://data.av100.ru/{operation}.ashx?key={AV100Token}&{addParameters}";
 }

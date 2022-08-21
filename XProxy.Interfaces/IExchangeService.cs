@@ -7,7 +7,7 @@ public interface IExchangeService
     /// <summary>
     /// Get data about account (paid till, request amount etc)
     /// </summary>
-    Task<AV100ResponseProfile> AV100RequestProfile(long userSettingsId, CancellationToken token = default);
+    Task<AV100ResponseProfile> AV100RequestProfile(CancellationToken token = default);
 
     /// <summary>
     /// Get data from AV100 filters match items

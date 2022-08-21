@@ -41,7 +41,7 @@ public class SettingsController : Controller
         {
             Settings = await _settingsService.GetSettingsAsync(HttpContext.RequestAborted),
             Filters = await _filtersService.GetFiltersAsync(HttpContext.RequestAborted),
-            Profile = await exchangeService.AV100RequestProfile(userSettingsId, HttpContext.RequestAborted)
+            Profile = await exchangeService.AV100RequestProfile(HttpContext.RequestAborted)
         });
     }
 

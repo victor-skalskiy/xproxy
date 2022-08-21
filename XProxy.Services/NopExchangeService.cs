@@ -33,5 +33,10 @@ public sealed class NopExchangeService : IExchangeService
         return Task.FromResult<ICollection<AV100Source>>(Array.Empty<AV100Source>());
     }
 
+    public Task<AV100ResponseProfile> AV100RequestProfile(CancellationToken token = default)
+    {
+        return Task.FromResult(new AV100ResponseProfile());
+    }
+
     #endregion
 }
