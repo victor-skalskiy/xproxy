@@ -1,4 +1,4 @@
-﻿using XProxy.DAL;
+using XProxy.DAL;
 using XProxy.Interfaces;
 using XProxy.Domain;
 using Microsoft.EntityFrameworkCore;
