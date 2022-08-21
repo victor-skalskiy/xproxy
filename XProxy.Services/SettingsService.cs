@@ -175,12 +175,12 @@ public class SettingsService : ISettingsService
             .Select(x => SettingsMapper.GetFilterItem(x)).ToArrayAsync();
     }
 
-    public async Task<AV100Filter> CreateFilterAsync(long YearStart, string YearEnd, string PriceStart, string PriceEnd, long DistanceStart, long DistanceEnd, long CarCount, long PhoneCount, long Regionid, CancellationToken token = default)
+    public async Task<AV100Filter> CreateFilterAsync(long yearStart, string yearEnd, string priceStart, string priceEnd, long distanceStart, long distanceEnd, long carCount, long phoneCount, long regionId, CancellationToken token = default)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<AV100Filter> UpdateFilterAsync(long id, long YearStart, string YearEnd, string PriceStart, string PriceEnd, long DistanceStart, long DistanceEnd, long CarCount, long PhoneCount, long Regionid, CancellationToken token = default)
+    public async Task<AV100Filter> UpdateFilterAsync(long id, long yearStart, string yearEnd, string priceStart, string priceEnd, long distanceStart, long distanceEnd, long carCount, long phoneCount, long regionId, CancellationToken token = default)
     {
         throw new NotImplementedException();
     }
