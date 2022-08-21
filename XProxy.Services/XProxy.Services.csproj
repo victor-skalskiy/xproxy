@@ -12,9 +12,9 @@
     <None Remove="Microsoft.Extensions.Http.Polly" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.8" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="6.0.6" />
+    <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="6.0.8" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\XProxy.DAL\XProxy.DAL.csproj" />
