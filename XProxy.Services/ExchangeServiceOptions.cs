@@ -17,4 +17,10 @@ public sealed class ExchangeServiceOptions
     public string AV100RegionAPIParameters { get; }
     
     public string AV100SourceAPIParameters { get; }
+
+    public string AV100RequestUrl(string aV100Token,  string operation, string addParameters)
+        => $"https://data.av100.ru/{operation}.ashx?key={aV100Token}&{addParameters}";
+
+    public string XLombardRequestUrl(string xLombardAPIUrl, string xLombardToken)
+        => $"{xLombardAPIUrl}/handlers/requests.ashx?operation=add&token={xLombardToken}";
 }

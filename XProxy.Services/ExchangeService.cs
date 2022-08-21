@@ -38,7 +38,7 @@ public sealed class ExchangeService : IExchangeService
         var client = _httpClientFactory.CreateClient(HttpClientName);
 
         var result = await client.PostAsync(
-            _userSettings.XLombardRequestUrl, 
+            _options.XLombardRequestUrl(_userSettings.XLombardAPIUrl, _userSettings.XLombardToken),
             CreateContent(postData),
             token);
         
@@ -52,11 +52,11 @@ public sealed class ExchangeService : IExchangeService
         return new XLombardResponse();
     }
 
-    public async Task<AV100ResponseProfile> AV100RequestProfile(long userSettingsId, CancellationToken token = default)
+    public async Task<AV100ResponseProfile> AV100RequestProfile(CancellationToken token = default)
     {
-        var client = _httpClientFactory.CreateClient(HttpClientName);
+        var client = _httpClientFactory.CreateClient(HttpClientName);        
         var result = await client.PostAsync(
-            _userSettings.AV100RequestUrl("profile", string.Empty),
+            _options.AV100RequestUrl(_userSettings.AV100Token, "profile", string.Empty),
             CreateContent(string.Empty),
             token);
 
@@ -102,7 +102,7 @@ public sealed class ExchangeService : IExchangeService
     {
         var client = _httpClientFactory.CreateClient(HttpClientName);
         var result = await client.PostAsync(
-            _userSettings.AV100RequestUrl(_options.AV100DictionaryAPIOperation, _options.AV100RegionAPIParameters),
+            _options.AV100RequestUrl(_userSettings.AV100Token, _options.AV100DictionaryAPIOperation, _options.AV100RegionAPIParameters),
             CreateContent(string.Empty),
             token);
 
@@ -129,7 +129,7 @@ public sealed class ExchangeService : IExchangeService
     {
         var client = _httpClientFactory.CreateClient(HttpClientName);
         var result = await client.PostAsync(
-            _userSettings.AV100RequestUrl(_options.AV100DictionaryAPIOperation, _options.AV100SourceAPIParameters),
+            _options.AV100RequestUrl(_userSettings.AV100Token, _options.AV100DictionaryAPIOperation, _options.AV100SourceAPIParameters),
             CreateContent(string.Empty),
             token);
 
