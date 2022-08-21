@@ -2,9 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using XProxy.Web.Models;
 using XProxy.Interfaces;
-using Polly;
-using System;
-using Newtonsoft.Json;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using XProxy.Domain;
 
 namespace XProxy.Web.Controllers;
 
@@ -12,63 +11,96 @@ public class FilterController : Controller
 {
     private readonly ILogger<SettingsController> _logger;
     private readonly ISettingsService _settingsService;
-    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IFiltersService _filtersService;
 
-    public FilterController(ILogger<SettingsController> logger, ISettingsService settingsService, IHttpClientFactory httpClientFactory)
+    public FilterController(ILogger<SettingsController> logger, ISettingsService settingsService, IFiltersService filtersService)
     {
         _settingsService = settingsService;
         _logger = logger;
-        _httpClientFactory = httpClientFactory;
+        _filtersService = filtersService;
     }
-
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-    }
-
-
 
     [HttpGet]
     public async Task<IActionResult> Create()
     {
-        return View("Edit", new FilterEditModel() { });        
+        var model = new FilterEditModel
+        {
+            Regions = new MultiSelectList(
+                await _filtersService.GetRegionsAsync(HttpContext.RequestAborted),
+                nameof(AV100Region.Id),
+                nameof(AV100Region.Name)),
+            Sources = new MultiSelectList(
+                await _filtersService.GetSourcesAsync(HttpContext.RequestAborted),
+                nameof(AV100Source.Id),
+                nameof(AV100Source.Name))
+        };
+
+        return View("Create", model);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(SettingsEditModel model)
+    public async Task<IActionResult> Create(FilterEditModel model)
     {
-        //var resutl = await _settingsService.CreateUserSettingsAsync(model.UpdateInterval, model.Av100Token, model.XLombardAPIUrl, model.XLombardToken,
-        //    model.XLombardFilialId, model.XLombardDealTypeId, model.XLombardSource, HttpContext.RequestAborted);
+        if (ModelState.IsValid)
+        {
+            var result = await _filtersService.CreateFilterAsync(model.YearStart, model.YearEnd, model.PriceStart, model.PriceEnd,
+                model.DistanceStart, model.DistanceEnd, model.CarCount, model.PhoneCount, model.RegionIds.ToList(), model.SourceIds.ToList(),
+                HttpContext.RequestAborted);
 
-        //return RedirectToAction("Index");
-        return View();
+            return RedirectToAction("Index", "Settings");
+        }
+
+        return View(model);
     }
 
     [HttpGet]
     public async Task<IActionResult> Edit(long id)
     {
-        //var result = await _settingsService.GetSettingsItemAsync(id, HttpContext.RequestAborted);
-        //return View("Edit", new SettingsEditModel
-        //{
-        //    Av100Token = result.Av100Token,
-        //    UpdateInterval = result.UpdateInterval,
-        //    XLombardAPIUrl = result.XLombardAPIUrl,
-        //    XLombardToken = result.XLombardToken,
-        //    XLombardDealTypeId = result.XLombardDealTypeId,
-        //    XLombardFilialId = result.XLombardFilialId,
-        //    XLombardSource = result.XLombardSource
-        //});
-        return View();
+        var model = await _filtersService.GetFilterAsync(id, HttpContext.RequestAborted);
+
+        return View("Edit", new FilterEditModel
+        {
+            YearStart = model.YearStart,
+            YearEnd = model.YearEnd,
+            PriceStart = model.PriceStart,
+            PriceEnd = model.PriceEnd,
+            DistanceStart = model.DistanceStart,
+            DistanceEnd = model.DistanceEnd,
+            CarCount = model.CarCount,
+            PhoneCount = model.PhoneCount,
+            RegionIds = model.RegionIds,
+            SourceIds = model.SourceIds,
+            Regions = new MultiSelectList(
+                model.AllRegions,
+                nameof(AV100Region.Id),
+                nameof(AV100Region.Name),
+                model.RegionIds),
+            Sources = new MultiSelectList(
+                model.AllSources,
+                nameof(AV100Source.Id),
+                nameof(AV100Source.Name),
+                model.SourceIds)
+        });
     }
 
     [HttpPost]
-    public async Task<IActionResult> Edit(SettingsEditModel model, long id)
+    public async Task<IActionResult> Edit(FilterEditModel model, long id)
     {
-        //var resutl = await _settingsService.UpdateUserSettingsAsync(id, model.UpdateInterval, model.Av100Token, model.XLombardAPIUrl, model.XLombardToken,
-        //    model.XLombardFilialId, model.XLombardDealTypeId, model.XLombardSource, HttpContext.RequestAborted);
+        if (ModelState.IsValid)
+        {
+            var result = await _filtersService.UpdateFilterAsync(id, model.YearStart, model.YearEnd, model.PriceStart, model.PriceEnd,
+                model.DistanceStart, model.DistanceEnd, model.CarCount, model.PhoneCount, model.RegionIds.ToList(), model.SourceIds.ToList(),
+                HttpContext.RequestAborted);
 
-        //return RedirectToAction("Index");
-        return View();
-    }    
+            return RedirectToAction("Index", "Settings");    
+        }
+
+        return View(model);
+    }
+    
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public IActionResult Error()
+    {
+        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+    }
 }

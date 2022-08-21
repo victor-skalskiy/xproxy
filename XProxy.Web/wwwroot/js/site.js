@@ -1,5 +1,20 @@
-﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿$(document).ready(function () {
+    setMultiselect('RegionIds', 'region-select2-values')
+    setMultiselect('SourceIds', 'source-select2-values')
+});
 
-// Write your JavaScript code.
+function setMultiselect(id, valuesName) {
+    const sel = $('#' + id);
+    sel.select2();
+    sel.val(getArrayValue(valuesName))
+    console.log(getArrayValue(valuesName))
+    sel.trigger('change')
+}
 
+function getArrayValue(name) {
+    const str = $('#' + name).val();
+    if (!str)
+        return [];
+    
+    return str.split(',');
+}

@@ -2,9 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using XProxy.Web.Models;
 using XProxy.Interfaces;
-using Polly;
-using System;
-using Newtonsoft.Json;
 
 namespace XProxy.Web.Controllers;
 
@@ -12,13 +9,19 @@ public class SettingsController : Controller
 {
     private readonly ILogger<SettingsController> _logger;
     private readonly ISettingsService _settingsService;
-    private readonly IHttpClientFactory _httpClientFactory;    
+    private readonly IFiltersService _filtersService;
+    private readonly IExchangeServiceFactory _exchangeServiceFactory;
 
-    public SettingsController(ILogger<SettingsController> logger, ISettingsService settingsService, IHttpClientFactory httpClientFactory)
+    public SettingsController(
+        ISettingsService settingsService,
+        IFiltersService filtersService,
+        IExchangeServiceFactory exchangeServiceFactory,
+        ILogger<SettingsController> logger)
     {
         _settingsService = settingsService;
         _logger = logger;
-        _httpClientFactory = httpClientFactory;        
+        _filtersService = filtersService;
+        _exchangeServiceFactory = exchangeServiceFactory;
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -33,19 +36,19 @@ public class SettingsController : Controller
     public async Task<IActionResult> Index()
     {
         var userSettingsId = 1;
-
-        var result = new Dictionary<string, object>();
-        result.Add("Settings", await _settingsService.GetSettingsAsync(HttpContext.RequestAborted));
-        result.Add("Filter", await _settingsService.GetFiltersAsync(HttpContext.RequestAborted));
-        result.Add("Status", await _settingsService.AV100RequestProfile(userSettingsId, HttpContext.RequestAborted));
-
-        return View(result);
+        var exchangeService = await _exchangeServiceFactory.CreateAsync(userSettingsId);
+        return View(new IndexModel
+        {
+            Settings = await _settingsService.GetSettingsAsync(HttpContext.RequestAborted),
+            Filters = await _filtersService.GetFiltersAsync(HttpContext.RequestAborted),
+            Profile = await exchangeService.AV100RequestProfile(userSettingsId, HttpContext.RequestAborted)
+        });
     }
 
     [HttpGet]
     public async Task<IActionResult> Create()
     {
-        return View("Edit", new SettingsEditModel() { });
+        return View("Create", new SettingsEditModel());
     }
 
     [HttpPost]
@@ -54,7 +57,7 @@ public class SettingsController : Controller
         var resutl = await _settingsService.CreateUserSettingsAsync(model.UpdateInterval, model.Av100Token, model.XLombardAPIUrl, model.XLombardToken,
             model.XLombardFilialId, model.XLombardDealTypeId, model.XLombardSource, HttpContext.RequestAborted);
 
-        return RedirectToAction("Index");
+        return Redirect("/");
     }
 
     [HttpGet]
@@ -85,9 +88,24 @@ public class SettingsController : Controller
     [HttpGet]
     public async Task<IActionResult> CheckConnection()
     {
-        var result = await _settingsService.XLRequest(1, HttpContext.RequestAborted);
-
+        var exchangeService = await _exchangeServiceFactory.CreateAsync(1);
+        var result = await exchangeService.XLRequest(1, HttpContext.RequestAborted);
         return result.state > 0 ? RedirectToAction("Index") : RedirectToAction("Error");
     }
 
+    [HttpGet]
+    public async Task<IActionResult> LoadDictionaries()
+    {
+        var exchangeService = await _exchangeServiceFactory.CreateDefaultAsync();
+        
+        var regions = await exchangeService.AV100RequestRegions(HttpContext.RequestAborted);
+        if (regions is not null)
+            await _filtersService.CreateRegionsAsync(regions.ToDictionary(z => z.RegionId, z => z.Name), HttpContext.RequestAborted);
+
+        var sources = await exchangeService.AV100RequestSource(HttpContext.RequestAborted);
+        if (sources is not null)
+            await _filtersService.CreateSourcesAsync(sources.ToDictionary(z => z.SourceId, z => z.Name), HttpContext.RequestAborted);
+
+        return RedirectToAction("Index");
+    }
 }

@@ -10,10 +10,12 @@
     <None Remove="AV100\" />
     <None Remove="XLombard\" />
     <None Remove="Newtonsoft.Json" />
+    <None Remove="AV100\Response\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AV100\" />
     <Folder Include="XLombard\" />
+    <Folder Include="AV100\Response\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />

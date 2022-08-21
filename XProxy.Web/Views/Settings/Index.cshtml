@@ -1,27 +1,23 @@
-﻿@using XProxy.Domain;
-@model Dictionary<string, object>
-
-@{
+﻿@{
     ViewData["Title"] = "Dashboard";
-    var accessDate = ((AV100ResponseProfile)Model["Status"]).Result.AccessTo.ToString("D");
-    var leftClicks = ((AV100ResponseProfile)Model["Status"]).Result.LleftClicks;
 }
 
 <h1>@ViewData["Title"]</h1>
+
 @*<hr style="padding-bottom: 25px;" />*@
 
 <div class="card mb-5 mt-3">
     <h5 class="card-header">AV100 balance</h5>
     <div class="card-body">
-        <h5 class="card-title">Account enabled till @accessDate</h5>
-        <p class="card-text">Еhere are @leftClicks requests left on the balance</p>
+        <h5 class="card-title">Account enabled till @Model.Profile.Result.AccessTo.ToString("D")</h5>
+        <p class="card-text">There are @Model.Profile.Result.LleftClicks requests left on the balance</p>
         <a href="https://av100.ru" class="btn btn-info" target="_blank">go to AV100</a>
     </div>
 </div>
 
-@if (Model.ContainsKey("Settings") && ((ICollection<UserSettingsItem>)Model["Settings"]).Count > 0)
+@if (Model.Settings != null && Model.Settings.Count > 0)
 {
-    <h2>API Settings</h2>
+    <h2>XLombard API Settings</h2>
     <table class="table">
         <thead class=".thead-dark">
             <tr>
@@ -35,7 +31,7 @@
         </thead>
         <tbody>
             @{
-                foreach (var item in (ICollection<UserSettingsItem>)Model["Settings"])
+                foreach (var item in Model.Settings)
                 {
                     <tr>
                         <th scope="row">@item.Id</th>
@@ -59,26 +55,25 @@ else
     </div>
 }
 <br />
-@if (Model.ContainsKey("Filter") && ((ICollection<AV100FilterItem>)Model["Filter"]).Count > 0)
+@if (Model.Filters != null && Model.Filters.Count > 0)
     {
-    <h2>API Settings</h2>
+    <h2>AV100 API Settings</h2>
     <table class="table">
         <thead class=".thead-dark">
             <tr>
+                <th scope="col">ID</th>
                 <th scope="col">Year start</th>
                 <th scope="col">Year end</th>
                 <th scope="col">Price start</th>
                 <th scope="col">Price end</th>
                 <th scope="col">Distance start</th>
                 <th scope="col">Distance end</th>
-                <th scope="col">Car count</th>
-                <th scope="col">Phone count</th>
                 <th scope="col">Actions</th>
             </tr>
         </thead>
         <tbody>
             @{
-                foreach (var fitem in (ICollection<AV100FilterItem>)Model["Filter"])
+                foreach (var fitem in Model.Filters)
                 {
                     <tr>
                         <th scope="row">@fitem.Id</th>
@@ -88,8 +83,6 @@ else
                         <td>@fitem.PriceEnd</td>
                         <td>@fitem.DistanceStart</td>
                         <td>@fitem.DistanceEnd</td>
-                        <td>@fitem.CarCount</td>
-                        <td>@fitem.PhoneCount</td>
                         <td>@Html.ActionLink("Edit", "Edit", "Filter", new { id = fitem.Id }, new { @class = "btn btn-primary" })</td>
                     </tr>
                 }
