@@ -11,19 +11,24 @@ public interface IFiltersService
     /// <summary>
     /// Getting specific filter item for edit page or api requests
     /// </summary>
-    Task<AV100Filter> GetFilterAsync(long id, CancellationToken token = default);
+    Task<AV100Filter> GetFilterAsync(long id, CancellationToken token = default);   
 
     /// <summary>
     /// Creating filter
     /// </summary>
     Task<AV100Filter> CreateFilterAsync(long yearStart, long yearEnd, long priceStart, long priceEnd, long distanceStart,
-        long distanceEnd, long carCount, long phoneCount, List<long> regionIds, List<long> sourceIds, CancellationToken token = default);
+        long distanceEnd, long packCount, bool remont, List<long> regionIds, List<long> sourceIds, CancellationToken token = default);
+
+    /// <summary>
+    /// Creating temporary filter (1 launch)
+    /// </summary>
+    Task<AV100Filter> CreateTempFilterAsync(CancellationToken token = default);
 
     /// <summary>
     /// Updating filter
     /// </summary>
     Task<AV100Filter> UpdateFilterAsync(long id, long yearStart, long yearEnd, long priceStart, long priceEnd, long distanceStart,
-        long distanceEnd, long carCount, long phoneCount, List<long> regionIds, List<long> sourceIds, CancellationToken token = default);
+        long distanceEnd, long packCount, bool remont, List<long> regionIds, List<long> sourceIds, CancellationToken token = default);
 
     /// <summary>
     /// Get list of source items for controls

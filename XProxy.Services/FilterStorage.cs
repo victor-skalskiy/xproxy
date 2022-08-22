@@ -8,14 +8,19 @@ namespace XProxy.Services;
 public sealed class FilterStorage : IFilterStorage
 {
     private readonly DataContext _context;
+    private readonly IFiltersService _filtersService;
     
-    public FilterStorage(DataContext context)
+    public FilterStorage(DataContext context, IFiltersService filtersService)
     {
         _context = context;
+        _filtersService = filtersService;
     }
 
     public async Task<AV100Filter> GetFilterAsync(long filterId, CancellationToken token = default)
     {
+        if (_context.AV100Filters.Count() == 0)
+            await _filtersService.CreateTempFilterAsync();
+
         var filterEntity = await _context.AV100Filters.Where(x => x.Id == filterId)
             .Include(s => s.Sources)
             .Include(r => r.Regions)

@@ -1,69 +1,68 @@
 ﻿@model FilterEditModel
 
 <div class="row g-3">
-    <div class="form-group col-md-6">
+    <div class="form-group col-md-2">
         <label class="form-label" asp-for="@Model.YearStart"></label>
         <input class="form-control" asp-for="@Model.YearStart" />
         <span asp-validation-for="@Model.YearStart" class="text-danger"></span>
     </div>
-    <div class="form-group col-md-6">
+    <div class="form-group col-md-2">
         <label class="form-label" asp-for="@Model.YearEnd"></label>
         <input class="form-control" asp-for="@Model.YearEnd" />
         <span asp-validation-for="@Model.YearEnd" class="text-danger"></span>
     </div>
-
-    <div class="form-group col-md-6">
+    <div class="form-group col-md-2">
         <label class="form-label" asp-for="@Model.PriceStart"></label>
         <input class="form-control" asp-for="@Model.PriceStart" />
         <span asp-validation-for="@Model.PriceStart" class="text-danger"></span>
     </div>
-    <div class="form-group col-md-6">
+    <div class="form-group col-md-2">
         <label class="form-label" asp-for="@Model.PriceEnd"></label>
         <input class="form-control" asp-for="@Model.PriceEnd" />
         <span asp-validation-for="@Model.PriceEnd" class="text-danger"></span>
     </div>
-
-    <div class="form-group col-md-6">
+    <div class="form-group col-md-2">
         <label class="form-label" asp-for="@Model.DistanceStart"></label>
         <input class="form-control" asp-for="@Model.DistanceStart" />
         <span asp-validation-for="@Model.DistanceStart" class="text-danger"></span>
     </div>
-    <div class="form-group col-md-6">
+    <div class="form-group col-md-2">
         <label class="form-label" asp-for="@Model.DistanceEnd"></label>
         <input class="form-control" asp-for="@Model.DistanceEnd" />
         <span asp-validation-for="@Model.DistanceEnd" class="text-danger"></span>
     </div>
 
-    <div class="form-group col-md-6">
+    <div class="form-group col-md-2">
         <label class="form-label" asp-for="@Model.DistanceStart"></label>
         <input class="form-control" asp-for="@Model.DistanceStart" />
         <span asp-validation-for="@Model.DistanceStart" class="text-danger"></span>
     </div>
-    <div class="form-group col-md-6">
+    <div class="form-group col-md-2">
         <label class="form-label" asp-for="@Model.DistanceEnd"></label>
         <input class="form-control" asp-for="@Model.DistanceEnd" />
         <span asp-validation-for="@Model.DistanceEnd" class="text-danger"></span>
     </div>
 
-    <div class="form-group col-md-6">
-        <label class="form-label" asp-for="@Model.CarCount"></label>
-        <input class="form-control" asp-for="@Model.CarCount" />
-        <span asp-validation-for="@Model.CarCount" class="text-danger"></span>
+    <div class="form-group col-md-4">
+        <label class="form-label" asp-for="@Model.PackCount"></label>
+        <input class="form-control" asp-for="@Model.PackCount" />
+        <span asp-validation-for="@Model.PackCount" class="text-danger"></span>
     </div>
-    <div class="form-group col-md-6">
-        <label class="form-label" asp-for="@Model.PhoneCount"></label>
-        <input class="form-control" asp-for="@Model.PhoneCount" />
-        <span asp-validation-for="@Model.PhoneCount" class="text-danger"></span>
+    <div class="form-group col-md-4">
+        <input class="form-check-input" asp-for=@Model.Remont type="checkbox" />
+        <label class="form-check-label" asp-for="@Model.Remont"></label>
+        <span asp-validation-for="@Model.Remont" class="text-danger"></span>
     </div>
+    
     <div class="form-group col-md-12">
-        <input type="hidden" value="@string.Join(",", Model.RegionIds)" id="region-select2-values"/>
+        <input type="hidden" value="@string.Join(",", Model.RegionIds)" id="region-select2-values" />
         <label class="form-label" asp-for="@Model.RegionIds"></label>
         @Html.DropDownListFor(m => m.RegionIds, Model.Regions, null, new { @multiple = "multiple", @class = "form-control" })
         <span asp-validation-for="@Model.RegionIds" class="text-danger"></span>
     </div>
 
     <div class="form-group col-md-12">
-        <input type="hidden" value="@string.Join(",", Model.SourceIds)" id="source-select2-values"/>
+        <input type="hidden" value="@string.Join(",", Model.SourceIds)" id="source-select2-values" />
         <label class="form-label" asp-for="@Model.SourceIds"></label>
         @Html.DropDownListFor(m => m.SourceIds, Model.Sources, null, new { @multiple = "multiple", @class = "form-control" })
         <span asp-validation-for="@Model.SourceIds" class="text-danger"></span>

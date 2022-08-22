@@ -17,11 +17,6 @@ public class UserSettingsEntity : BaseEntityEntity
     public string AV100Token { get; set; }
 
     /// <summary>
-    /// Interval for fetch data from AV100 and push to XLombard
-    /// </summary>
-    public long UpdateInterval { get; set; }
-
-    /// <summary>
     /// Date of last syncing
     /// </summary>
     public DateTime LastSyncDate { get; set; }

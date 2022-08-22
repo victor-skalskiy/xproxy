@@ -1,5 +1,4 @@
-﻿using System;
-namespace XProxy.Domain;
+﻿namespace XProxy.Domain;
 
 /// <summary>
 /// Card element, working in BL

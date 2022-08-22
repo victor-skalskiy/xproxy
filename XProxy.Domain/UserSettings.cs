@@ -7,8 +7,6 @@ public class UserSettings
 {
     public long Id { get; set; }
 
-    public long UpdateInterval { get; set; }
-
     public string AV100Token { get; set; }
 
     public string XLombardAPIUrl { get; set; }
