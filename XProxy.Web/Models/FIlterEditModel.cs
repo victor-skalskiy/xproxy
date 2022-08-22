@@ -30,11 +30,16 @@ namespace XProxy.Web.Models
 
         [Display(Name = "Sources"), Required(ErrorMessage = "field is required")]
         public long[] SourceIds { get; set; } = Array.Empty<long>();
-        
+
         public MultiSelectList? Regions { get; set; }
-        
+
         public MultiSelectList? Sources { get; set; }
 
-        public string FilterRequestString { get; set; }
+        public string? FilterRequestString { get; set; }
+
+        public long FilterRequestCounter { get; set; }
+
+        public long[] RegionExternalIds { get; set; } = Array.Empty<long>();
+        public long[] SourceExternalIds { get; set; } = Array.Empty<long>();
     }
 }

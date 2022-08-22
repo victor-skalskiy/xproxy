@@ -23,6 +23,9 @@ public class AV100Filter
     public long[] RegionIds { get; set; } = Array.Empty<long>();
     public long[] SourceIds { get; set; } = Array.Empty<long>();
 
+    public long[] RegionExternalIds { get; set; } = Array.Empty<long>();
+    public long[] SourceExternalIds { get; set; } = Array.Empty<long>();
+
     public List<AV100Region> AllRegions { get; set; }
     public List<AV100Source> AllSources { get; set; }
 }

@@ -20,5 +20,7 @@ namespace XProxy.Interfaces
         string AV100RegionAPIParameters { get; }
 
         string AV100SourceAPIParameters { get; }
+
+        string HttpClientName { get; }
     }
 }

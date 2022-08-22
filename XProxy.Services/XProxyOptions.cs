@@ -13,6 +13,7 @@ public class XProxyOptions : IXProxyOptions
         AV100RegionAPIParameters = "name=offersregion";
         AV100SourceAPIParameters = "name=offerssource";
         DefaultFilterId = 1;
+        HttpClientName = "MyBaseClient";        
     }
 
     /// <summary>
@@ -32,4 +33,6 @@ public class XProxyOptions : IXProxyOptions
     public string AV100RegionAPIParameters { get; }
 
     public string AV100SourceAPIParameters { get; }
+
+    public string HttpClientName { get; }
 }

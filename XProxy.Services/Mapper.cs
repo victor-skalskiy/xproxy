@@ -63,7 +63,9 @@ public static class Mapper
             AllSources = aV100Sources,
             //TODO почему-то выбранный энтити с нуловыми связями
             RegionIds = aV100FilterEntity.Regions?.Select(x => x.Id).ToArray() ?? Array.Empty<long>(),
-            SourceIds = aV100FilterEntity.Sources?.Select(x => x.Id).ToArray() ?? Array.Empty<long>()       
+            SourceIds = aV100FilterEntity.Sources?.Select(x => x.Id).ToArray() ?? Array.Empty<long>(),
+            RegionExternalIds = aV100FilterEntity.Regions?.Select(x => x.AV100RegionId).ToArray() ?? Array.Empty<long>(),
+            SourceExternalIds = aV100FilterEntity.Sources?.Select(x => x.AV100SourceId).ToArray() ?? Array.Empty<long>()
         };
     public static AV100FilterItem GetFilterItem(AV100FilterEntity aV100FilterEntity)
         => new AV100FilterItem

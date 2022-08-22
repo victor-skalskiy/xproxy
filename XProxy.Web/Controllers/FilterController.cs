@@ -73,6 +73,8 @@ public class FilterController : Controller
             PhoneCount = model.PhoneCount,
             RegionIds = model.RegionIds,
             SourceIds = model.SourceIds,
+            RegionExternalIds = model.RegionExternalIds,
+            SourceExternalIds = model.SourceExternalIds,
             Regions = new MultiSelectList(
                 model.AllRegions,
                 nameof(AV100Region.Id),
@@ -83,7 +85,8 @@ public class FilterController : Controller
                 nameof(AV100Source.Id),
                 nameof(AV100Source.Name),
                 model.SourceIds),
-            FilterRequestString = await aV100ExchangeService.AV100RequestString(HttpContext.RequestAborted)
+            FilterRequestString = await aV100ExchangeService.AV100RequestString(HttpContext.RequestAborted),
+            FilterRequestCounter = await aV100ExchangeService.AV100ReuestListCount(0, 0, HttpContext.RequestAborted)
         });
     }
 
@@ -96,12 +99,12 @@ public class FilterController : Controller
                 model.DistanceStart, model.DistanceEnd, model.CarCount, model.PhoneCount, model.RegionIds.ToList(), model.SourceIds.ToList(),
                 HttpContext.RequestAborted);
 
-            return RedirectToAction("Index", "Settings");    
+            return RedirectToAction("Index", "Settings");
         }
 
         return View(model);
     }
-    
+
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
