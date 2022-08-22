@@ -12,12 +12,14 @@ public class FilterController : Controller
     private readonly ILogger<SettingsController> _logger;
     private readonly ISettingsService _settingsService;
     private readonly IFiltersService _filtersService;
+    private readonly IAV100ExchangeServiceFactory _AV100ExchangeServiceFactory;
 
-    public FilterController(ILogger<SettingsController> logger, ISettingsService settingsService, IFiltersService filtersService)
+    public FilterController(ILogger<SettingsController> logger, ISettingsService settingsService, IFiltersService filtersService, IAV100ExchangeServiceFactory aV100ExchangeServiceFactory)
     {
         _settingsService = settingsService;
         _logger = logger;
         _filtersService = filtersService;
+        _AV100ExchangeServiceFactory = aV100ExchangeServiceFactory;
     }
 
     [HttpGet]
@@ -56,6 +58,7 @@ public class FilterController : Controller
     [HttpGet]
     public async Task<IActionResult> Edit(long id)
     {
+        var aV100ExchangeService = await _AV100ExchangeServiceFactory.CreateDefaultAsync();
         var model = await _filtersService.GetFilterAsync(id, HttpContext.RequestAborted);
 
         return View("Edit", new FilterEditModel
@@ -79,7 +82,8 @@ public class FilterController : Controller
                 model.AllSources,
                 nameof(AV100Source.Id),
                 nameof(AV100Source.Name),
-                model.SourceIds)
+                model.SourceIds),
+            FilterRequestString = await aV100ExchangeService.AV100RequestString(HttpContext.RequestAborted)
         });
     }
 

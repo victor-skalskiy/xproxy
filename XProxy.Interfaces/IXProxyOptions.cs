@@ -13,6 +13,8 @@ namespace XProxy.Interfaces
         /// </summary>
         long DefaultUserSettingsId { get; }
 
+        long DefaultFilterId { get; }
+
         string AV100DictionaryAPIOperation { get; }
 
         string AV100RegionAPIParameters { get; }

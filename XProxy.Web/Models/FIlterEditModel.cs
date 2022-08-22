@@ -34,5 +34,7 @@ namespace XProxy.Web.Models
         public MultiSelectList? Regions { get; set; }
         
         public MultiSelectList? Sources { get; set; }
+
+        public string FilterRequestString { get; set; }
     }
 }

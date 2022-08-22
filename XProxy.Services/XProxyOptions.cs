@@ -12,6 +12,7 @@ public class XProxyOptions : IXProxyOptions
         AV100DictionaryAPIOperation = "dictionaries";
         AV100RegionAPIParameters = "name=offersregion";
         AV100SourceAPIParameters = "name=offerssource";
+        DefaultFilterId = 1;
     }
 
     /// <summary>
@@ -23,6 +24,8 @@ public class XProxyOptions : IXProxyOptions
     /// Hardcode UserSettingsEntityId for getting API's urls
     /// </summary>
     public long DefaultUserSettingsId { get; }
+
+    public long DefaultFilterId { get; }
 
     public string AV100DictionaryAPIOperation { get; }
 
