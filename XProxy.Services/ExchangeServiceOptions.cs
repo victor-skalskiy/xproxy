@@ -10,6 +10,9 @@ public sealed class ExchangeServiceOptions
         AV100DictionaryAPIOperation = av100DictionaryApiOperation;
         AV100RegionAPIParameters = av100RegionApiParameters;
         AV100SourceAPIParameters = av100SourceApiParameters;
+        OfferListCountCommand = "command=countlist";
+        OfferListOperation = "offer";
+
     }
 
     public string AV100DictionaryAPIOperation { get; }
@@ -23,4 +26,8 @@ public sealed class ExchangeServiceOptions
 
     public string XLombardRequestUrl(string xLombardAPIUrl, string xLombardToken)
         => $"{xLombardAPIUrl}/handlers/requests.ashx?operation=add&token={xLombardToken}";
+
+    public string OfferListCountCommand { get; }
+
+    public string OfferListOperation { get; }
 }

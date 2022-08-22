@@ -7,20 +7,22 @@ namespace XProxy.Services;
 
 public sealed class ExchangeService : IExchangeService
 {
-    private const string HttpClientName = "MyBaseClient";
     private const string JsonContentType = "application/json";
     private readonly UserSettings _userSettings;
     private readonly ExchangeServiceOptions _options;
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IXProxyOptions _xOptions;
 
     public ExchangeService(
         UserSettings userSettings,
         ExchangeServiceOptions options,
-        IHttpClientFactory httpClientFactory)
+        IHttpClientFactory httpClientFactory,
+        IXProxyOptions xProxyOptions)
     {
         _userSettings = userSettings;
         _options = options;
         _httpClientFactory = httpClientFactory;
+        _xOptions = xProxyOptions;
     }
 
     /// <summary>
@@ -35,7 +37,7 @@ public sealed class ExchangeService : IExchangeService
 
         var postData = System.Text.Json.JsonSerializer.Serialize(request);
 
-        var client = _httpClientFactory.CreateClient(HttpClientName);
+        var client = _httpClientFactory.CreateClient(_xOptions.HttpClientName);
 
         var result = await client.PostAsync(
             _options.XLombardRequestUrl(_userSettings.XLombardAPIUrl, _userSettings.XLombardToken),
@@ -54,7 +56,7 @@ public sealed class ExchangeService : IExchangeService
 
     public async Task<AV100ResponseProfile> AV100RequestProfile(CancellationToken token = default)
     {
-        var client = _httpClientFactory.CreateClient(HttpClientName);        
+        var client = _httpClientFactory.CreateClient(_xOptions.HttpClientName);        
         var result = await client.PostAsync(
             _options.AV100RequestUrl(_userSettings.AV100Token, "profile", string.Empty),
             CreateContent(string.Empty),
@@ -100,7 +102,7 @@ public sealed class ExchangeService : IExchangeService
     /// </summary>
     public async Task<ICollection<AV100Region>> AV100RequestRegions(CancellationToken token = default)
     {
-        var client = _httpClientFactory.CreateClient(HttpClientName);
+        var client = _httpClientFactory.CreateClient(_xOptions.HttpClientName);
         var result = await client.PostAsync(
             _options.AV100RequestUrl(_userSettings.AV100Token, _options.AV100DictionaryAPIOperation, _options.AV100RegionAPIParameters),
             CreateContent(string.Empty),
@@ -127,7 +129,7 @@ public sealed class ExchangeService : IExchangeService
     /// </summary>
     public async Task<ICollection<AV100Source>> AV100RequestSource(CancellationToken token = default)
     {
-        var client = _httpClientFactory.CreateClient(HttpClientName);
+        var client = _httpClientFactory.CreateClient(_xOptions.HttpClientName);
         var result = await client.PostAsync(
             _options.AV100RequestUrl(_userSettings.AV100Token, _options.AV100DictionaryAPIOperation, _options.AV100SourceAPIParameters),
             CreateContent(string.Empty),

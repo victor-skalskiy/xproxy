@@ -33,7 +33,7 @@ public class FiltersService : IFiltersService
             .FirstOrDefaultAsync(token);
 
         var regions = await _context.AV100Regions.Select(x => Mapper.GetRegion(x)).ToListAsync();
-        var sources = await _context.AV100Sources.Select(x => Mapper.GetSource(x)).ToListAsync();
+        var sources = await _context.AV100Sources.Select(x => Mapper.GetSource(x)).ToListAsync();        
 
         if (filterEntity is null)
             throw new Exception($"Can't get AV100FilterEntity by id = {id}");

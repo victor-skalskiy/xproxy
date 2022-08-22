@@ -7,7 +7,7 @@ public sealed class ExchangeServiceFactory : IExchangeServiceFactory
     private readonly IXProxyOptions _xProxyOptions;
     private readonly IUserSettingsStorage _userSettingsStorage;
     private readonly IHttpClientFactory _httpClientFactory;
-    
+
     public ExchangeServiceFactory(
         IXProxyOptions xProxyOptions,
         IUserSettingsStorage userSettingsStorage,
@@ -40,14 +40,14 @@ public sealed class ExchangeServiceFactory : IExchangeServiceFactory
         {
             return new NopExchangeService();
         }
-        
+
         return new ExchangeService(
             await _userSettingsStorage.GetUserSettingsAsync(userSettingsId, cancellationToken),
             new ExchangeServiceOptions(
                 _xProxyOptions.AV100DictionaryAPIOperation,
                 _xProxyOptions.AV100RegionAPIParameters,
                 _xProxyOptions.AV100SourceAPIParameters),
-            _httpClientFactory);
+            _httpClientFactory, _xProxyOptions);
 
     }
 }
