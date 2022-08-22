@@ -15,12 +15,20 @@ public class SettingsService : ISettingsService
     }
 
     /// <summary>
+    /// Create temporary item in first launch
+    /// </summary>
+    public Task<UserSettings> CreateTempUserSettingsAsync(CancellationToken token = default)
+    {
+        return CreateUserSettingsAsync("change it", "change it", "change it", 0, 0, "change it", token);
+    }
+
+    /// <summary>
     /// Insert new UserSettings from page Create
     /// </summary>
-    public async Task<UserSettings> CreateUserSettingsAsync(long updateInterval, string av100Token, string xLombardAPIUrl,
+    public async Task<UserSettings> CreateUserSettingsAsync(string av100Token, string xLombardAPIUrl,
         string xLombardToken, long xLombardFilialId, long xLombardDealTypeId, string xLombardSource, CancellationToken token = default)
     {
-        var userSettingsEntity = Mapper.FillSettingsEntity(new UserSettingsEntity(), updateInterval, av100Token, xLombardAPIUrl,
+        var userSettingsEntity = Mapper.FillSettingsEntity(new UserSettingsEntity(), av100Token, xLombardAPIUrl,
             xLombardToken, xLombardFilialId, xLombardDealTypeId, xLombardSource);
 
         _context.UserSettings.Add(userSettingsEntity);
@@ -32,7 +40,7 @@ public class SettingsService : ISettingsService
     /// <summary>
     /// Update UserSettings in db from Edit page
     /// </summary>
-    public async Task<UserSettings> UpdateUserSettingsAsync(long id, long updateInterval, string av100Token, string xLombardAPIUrl, string xLombardToken,
+    public async Task<UserSettings> UpdateUserSettingsAsync(long id, string av100Token, string xLombardAPIUrl, string xLombardToken,
         long xLombardFilialId, long xLombardDealTypeId, string xLombardSource, CancellationToken token = default)
     {
         var userSettingsEntity = await _context.UserSettings.Where(x => x.Id == id).FirstOrDefaultAsync(token);
@@ -40,7 +48,7 @@ public class SettingsService : ISettingsService
         if (userSettingsEntity is null)
             throw new Exception($"Can't get UserSettingsEntity by id = {id}");
 
-        userSettingsEntity = Mapper.FillSettingsEntity(userSettingsEntity, updateInterval, av100Token, xLombardAPIUrl, xLombardToken,
+        userSettingsEntity = Mapper.FillSettingsEntity(userSettingsEntity, av100Token, xLombardAPIUrl, xLombardToken,
             xLombardFilialId, xLombardDealTypeId, xLombardSource);
 
         _context.UserSettings.Update(userSettingsEntity);

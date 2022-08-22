@@ -5,11 +5,10 @@ namespace XProxy.Services;
 
 public static class Mapper
 {
-    public static UserSettingsEntity FillSettingsEntity(UserSettingsEntity userSettingsEntity, long updateInterval, string av100Token,
+    public static UserSettingsEntity FillSettingsEntity(UserSettingsEntity userSettingsEntity, string av100Token,
         string xLombardAPIUrl, string xLombardToken, long xLombardFilialId, long xLombardDealTypeId, string xLombardSource)
     {
         userSettingsEntity.AV100Token = av100Token;
-        userSettingsEntity.UpdateInterval = updateInterval;
         userSettingsEntity.XLombardAPIUrl = xLombardAPIUrl;
         userSettingsEntity.XLombardToken = xLombardToken;
         userSettingsEntity.ModifyDate = DateTime.UtcNow;
@@ -26,7 +25,6 @@ public static class Mapper
             Id = userSettingsEntity.Id,
             XLombardAPIUrl = userSettingsEntity.XLombardAPIUrl,
             XLombardToken = userSettingsEntity.XLombardToken,
-            UpdateInterval = userSettingsEntity.UpdateInterval,
             XLombardFilialId = userSettingsEntity.XLombardFilialId,
             XLombardSource = userSettingsEntity.XLombardSource,
             XLombardDealTypeId = userSettingsEntity.XLombardDealTypeId
@@ -38,7 +36,6 @@ public static class Mapper
             Id = userSettingsEntity.Id,
             XLombardAPIUrl = userSettingsEntity.XLombardAPIUrl,
             XLombardToken = userSettingsEntity.XLombardToken,
-            UpdateInterval = userSettingsEntity.UpdateInterval
         };
     public static XLombardOrderObj GetXLombardOrderObj(UserSettings userSettings)
         => new XLombardOrderObj
@@ -57,8 +54,8 @@ public static class Mapper
             PriceEnd = aV100FilterEntity.PriceEnd,
             DistanceStart = aV100FilterEntity.DistanceStart,
             DistanceEnd = aV100FilterEntity.DistanceEnd,
-            CarCount = aV100FilterEntity.CarCount,
-            PhoneCount = aV100FilterEntity.PhoneCount,
+            PackCount = aV100FilterEntity.PackCount,
+            Remont = aV100FilterEntity.Remont,
             AllRegions = aV100Regions,
             AllSources = aV100Sources,
             //TODO почему-то выбранный энтити с нуловыми связями
@@ -105,7 +102,7 @@ public static class Mapper
             Name = aV100ResponseRegionResultRow.RegionName
         };
     public static AV100FilterEntity FillFilterEntity(AV100FilterEntity entity, long yearStart, long yearEnd, long priceStart, long priceEnd, long distanceStart,
-        long distanceEnd, long carCount, long phoneCount, List<long> regionIds, List<long> sourceIds)
+        long distanceEnd, long packCount, bool remont, List<long> regionIds, List<long> sourceIds)
     {
         entity.YearStart = yearStart;
         entity.YearEnd = yearEnd;
@@ -113,11 +110,10 @@ public static class Mapper
         entity.PriceEnd = priceEnd;
         entity.DistanceStart = distanceStart;
         entity.DistanceEnd = distanceEnd;
-        entity.CarCount = carCount;
-        entity.PhoneCount = phoneCount;
+        entity.PackCount = packCount;
+        entity.Remont = remont;
         entity.ModifyDate = DateTime.UtcNow;
-        entity.PhoneCount = phoneCount;
-
+        
         return entity;
     }
 }

@@ -7,9 +7,11 @@ public interface ISettingsService
 
     Task<UserSettings> GetSettingsItemAsync(long id, CancellationToken token = default);
 
-    Task<UserSettings> CreateUserSettingsAsync(long updateInterval, string av100Token, string xLombardAPIUrl, string xLombardToken, long xLombardFilialId,
+    Task<UserSettings> CreateUserSettingsAsync(string av100Token, string xLombardAPIUrl, string xLombardToken, long xLombardFilialId,
         long xLombardDealTypeId, string xLombardSource, CancellationToken token = default);
 
-    Task<UserSettings> UpdateUserSettingsAsync(long id, long updateInterval, string av100Token, string xLombardAPIUrl, string xLombardToken, long xLombardFilialId,
+    Task<UserSettings> CreateTempUserSettingsAsync(CancellationToken token = default);
+
+    Task<UserSettings> UpdateUserSettingsAsync(long id, string av100Token, string xLombardAPIUrl, string xLombardToken, long xLombardFilialId,
         long xLombardDealTypeId, string xLombardSource, CancellationToken token = default);    
 }

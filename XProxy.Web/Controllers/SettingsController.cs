@@ -54,7 +54,7 @@ public class SettingsController : Controller
     [HttpPost]
     public async Task<IActionResult> Create(SettingsEditModel model)
     {
-        var resutl = await _settingsService.CreateUserSettingsAsync(model.UpdateInterval, model.Av100Token, model.XLombardAPIUrl, model.XLombardToken,
+        var resutl = await _settingsService.CreateUserSettingsAsync(model.Av100Token, model.XLombardAPIUrl, model.XLombardToken,
             model.XLombardFilialId, model.XLombardDealTypeId, model.XLombardSource, HttpContext.RequestAborted);
 
         return Redirect("/");
@@ -67,7 +67,6 @@ public class SettingsController : Controller
         return View("Edit", new SettingsEditModel
         {
             Av100Token = result.AV100Token,
-            UpdateInterval = result.UpdateInterval,
             XLombardAPIUrl = result.XLombardAPIUrl,
             XLombardToken = result.XLombardToken,
             XLombardDealTypeId = result.XLombardDealTypeId,
@@ -79,7 +78,7 @@ public class SettingsController : Controller
     [HttpPost]
     public async Task<IActionResult> Edit(SettingsEditModel model, long id)
     {
-        var resutl = await _settingsService.UpdateUserSettingsAsync(id, model.UpdateInterval, model.Av100Token, model.XLombardAPIUrl, model.XLombardToken,
+        var resutl = await _settingsService.UpdateUserSettingsAsync(id, model.Av100Token, model.XLombardAPIUrl, model.XLombardToken,
             model.XLombardFilialId, model.XLombardDealTypeId, model.XLombardSource, HttpContext.RequestAborted);
 
         return RedirectToAction("Index");

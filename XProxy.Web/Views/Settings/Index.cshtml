@@ -1,10 +1,4 @@
-﻿@{
-    ViewData["Title"] = "Dashboard";
-}
-
-<h1>@ViewData["Title"]</h1>
-
-@*<hr style="padding-bottom: 25px;" />*@
+﻿<h1>Dashboard</h1>
 
 <div class="card mb-5 mt-3">
     <h5 class="card-header">AV100 balance</h5>
@@ -25,7 +19,6 @@
                 <th scope="col">XL API key</th>
                 <th scope="col">XL url</th>
                 <th scope="col">AV100 API key</th>
-                <th scope="col">Interval</th>
                 <th scope="col">Actions</th>
             </tr>
         </thead>
@@ -37,8 +30,7 @@
                         <th scope="row">@item.Id</th>
                         <td>@item.XLombardToken</td>
                         <td>@item.XLombardAPIUrl</td>
-                        <td>@item.Av100Token</td>
-                        <td>@item.UpdateInterval</td>
+                        <td>@item.Av100Token</td>                        
                         <td>@Html.ActionLink("Edit", "Edit", "Settings", new { id = item.Id }, new { @class = "btn btn-primary" })</td>
                     </tr>
                 }

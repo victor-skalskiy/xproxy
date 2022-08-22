@@ -46,7 +46,7 @@ public class FilterController : Controller
         if (ModelState.IsValid)
         {
             var result = await _filtersService.CreateFilterAsync(model.YearStart, model.YearEnd, model.PriceStart, model.PriceEnd,
-                model.DistanceStart, model.DistanceEnd, model.CarCount, model.PhoneCount, model.RegionIds.ToList(), model.SourceIds.ToList(),
+                model.DistanceStart, model.DistanceEnd, model.PackCount, model.Remont, model.RegionIds.ToList(), model.SourceIds.ToList(),
                 HttpContext.RequestAborted);
 
             return RedirectToAction("Index", "Settings");
@@ -69,8 +69,8 @@ public class FilterController : Controller
             PriceEnd = model.PriceEnd,
             DistanceStart = model.DistanceStart,
             DistanceEnd = model.DistanceEnd,
-            CarCount = model.CarCount,
-            PhoneCount = model.PhoneCount,
+            PackCount = model.PackCount,
+            Remont = model.Remont,
             RegionIds = model.RegionIds,
             SourceIds = model.SourceIds,
             RegionExternalIds = model.RegionExternalIds,
@@ -96,7 +96,7 @@ public class FilterController : Controller
         if (ModelState.IsValid)
         {
             var result = await _filtersService.UpdateFilterAsync(id, model.YearStart, model.YearEnd, model.PriceStart, model.PriceEnd,
-                model.DistanceStart, model.DistanceEnd, model.CarCount, model.PhoneCount, model.RegionIds.ToList(), model.SourceIds.ToList(),
+                model.DistanceStart, model.DistanceEnd, model.PackCount, model.Remont, model.RegionIds.ToList(), model.SourceIds.ToList(),
                 HttpContext.RequestAborted);
 
             return RedirectToAction("Index", "Settings");

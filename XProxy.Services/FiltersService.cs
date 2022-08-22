@@ -45,10 +45,10 @@ public class FiltersService : IFiltersService
     /// Creating filter
     /// </summary>
     public async Task<AV100Filter> CreateFilterAsync(long yearStart, long yearEnd, long priceStart, long priceEnd, long distanceStart,
-        long distanceEnd, long carCount, long phoneCount, List<long> regionIds, List<long> sourceIds, CancellationToken token = default)
+        long distanceEnd, long packCount, bool remont, List<long> regionIds, List<long> sourceIds, CancellationToken token = default)
     {
         var filter = Mapper.FillFilterEntity(new AV100FilterEntity(), yearStart, yearEnd, priceStart, priceEnd, distanceStart, distanceEnd,
-            carCount, phoneCount, regionIds, sourceIds);
+            packCount, remont, regionIds, sourceIds);
 
         filter.Regions = _context.AV100Regions.Where(x => regionIds.Contains(x.Id)).ToList();
         filter.Sources = _context.AV100Sources.Where(x => sourceIds.Contains(x.Id)).ToList();
@@ -60,10 +60,18 @@ public class FiltersService : IFiltersService
     }
 
     /// <summary>
+    /// Create temporary filter, in 1 launch 
+    /// </summary>
+    public Task<AV100Filter> CreateTempFilterAsync(CancellationToken token = default)
+    {
+        return CreateFilterAsync(0, 0, 0, 0, 0, 0, 100, false, new List<long>(), new List<long>(), token);
+    }
+
+    /// <summary>
     /// Updating filter
     /// </summary>    
     public async Task<AV100Filter> UpdateFilterAsync(long id, long yearStart, long yearEnd, long priceStart, long priceEnd, long distanceStart,
-        long distanceEnd, long carCount, long phoneCount, List<long> regionIds, List<long> sourceIds, CancellationToken token = default)
+        long distanceEnd, long packCount, bool remont, List<long> regionIds, List<long> sourceIds, CancellationToken token = default)
     {
         var filterEntity = await _context.AV100Filters
             .Include(x => x.Regions)
@@ -74,7 +82,7 @@ public class FiltersService : IFiltersService
             throw new Exception($"Can't get AV100FilterEntity by id = {id}");
 
         filterEntity = Mapper.FillFilterEntity(filterEntity, yearStart, yearEnd, priceStart, priceEnd, distanceStart, distanceEnd,
-            carCount, phoneCount, regionIds, sourceIds);
+            packCount, remont, regionIds, sourceIds);
 
         filterEntity.Regions = _context.AV100Regions.Where(x => regionIds.Contains(x.Id)).ToList();
         

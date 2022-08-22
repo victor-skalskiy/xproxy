@@ -16,17 +16,17 @@ public class AV100FilterEntity : BaseEntityEntity
     public long DistanceStart { get; set; }
     public long DistanceEnd { get; set; }
 
+    /// <summary>
+    /// car need to repair
+    /// </summary>
+    public bool Remont { get; set; }
+
+    /// <summary>
+    /// count of new items on data set for start downloading
+    /// </summary>
+    public long PackCount { get; set; }
+
     public ICollection<AV100RegionEntity> Regions { get; set; }
 
     public ICollection<AV100SourceEntity> Sources { get; set; }
-
-    /// <summary>
-    /// Limit of cars wich linked to current adv phones
-    /// </summary>
-    public long CarCount { get; set; }
-
-    /// <summary>
-    /// Count of advs linked to phone
-    /// </summary>
-    public long PhoneCount { get; set; }
 }
