@@ -14,7 +14,7 @@ public static class Mapper
         userSettingsEntity.ModifyDate = DateTime.UtcNow;
         userSettingsEntity.XLombardFilialId = xLombardFilialId;
         userSettingsEntity.XLombardSource = xLombardSource;
-        userSettingsEntity.XLombardDealTypeId = xLombardFilialId;
+        userSettingsEntity.XLombardDealTypeId = xLombardDealTypeId;
 
         return userSettingsEntity;
     }

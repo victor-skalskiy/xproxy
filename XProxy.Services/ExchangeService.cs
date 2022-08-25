@@ -2,6 +2,7 @@
 using XProxy.Domain;
 using Newtonsoft.Json;
 using System.Text;
+using XProxy.DAL;
 
 namespace XProxy.Services;
 
@@ -12,17 +13,119 @@ public sealed class ExchangeService : IExchangeService
     private readonly ExchangeServiceOptions _options;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IXProxyOptions _xOptions;
+    private readonly AV100Filter _filter;
+    private readonly DataContext _context;
 
     public ExchangeService(
         UserSettings userSettings,
         ExchangeServiceOptions options,
         IHttpClientFactory httpClientFactory,
-        IXProxyOptions xProxyOptions)
+        AV100Filter filter,
+        IXProxyOptions xProxyOptions,
+        DataContext context)
     {
         _userSettings = userSettings;
         _options = options;
         _httpClientFactory = httpClientFactory;
         _xOptions = xProxyOptions;
+        _filter = filter;
+        _context = context;
+    }
+
+    private static StringContent CreateContent(string content)
+    {
+        return new StringContent(content ?? string.Empty, Encoding.UTF8, JsonContentType);
+    }
+
+    private static StringBuilder ParamsBuilder(string baseUrl = default, long yearStart = default, long yearEnd = default,
+            long priceStart = default, long priceEnd = default, long distanceStart = default, long distanceEnd = default,
+            long[] regions = default, long[] sources = default, long fromId = default, long toId = default)
+    {
+        var sb = new StringBuilder(baseUrl);
+
+        if (yearStart != 0)
+            sb.Append($"&yearStart={yearStart}");
+
+        if (yearEnd != 0)
+            sb.Append($"&yearEnd={yearEnd}");
+
+        if (priceStart != 0)
+            sb.Append($"&priceStart={priceStart}");
+
+        if (priceEnd != 0)
+            sb.Append($"&priceEnd={priceEnd}");
+
+        if (distanceStart != 0)
+            sb.Append($"&distanceStart={distanceStart}");
+
+        if (distanceEnd != 0)
+            sb.Append($"&distanceEnd={distanceEnd}");
+
+        if (regions.Length > 0)
+            sb.Append($"&listregionid=.{string.Join(".", regions)}.");
+
+        if (sources.Length > 0)
+            sb.Append($"&source=.{string.Join(".", sources)}.");
+
+        if (fromId != 0)
+            sb.Append($"&fromId={fromId}");
+
+        if (toId != 0)
+            sb.Append($"&toId={toId}");
+
+        return sb;
+    }
+
+    private static string CleanRegionName(string durtyName)
+    {
+        var result = durtyName;
+        if (result.Contains('('))
+            result = result.Substring(0, durtyName.IndexOf('('));
+
+        result = result.Replace("Республика", "").Replace("г.", "");
+        return result.Trim();
+    }
+
+    private async Task<TResponse> PostAsync<TResponse>(string url, CancellationToken token = default, string? content = null)
+    {
+        var client = _httpClientFactory.CreateClient(_xOptions.HttpClientName);
+        var result = await client.PostAsync(url, CreateContent(content), token);
+        if (result.IsSuccessStatusCode)
+        {
+            var responseText = await result.Content.ReadAsStringAsync(token);
+            try
+            {
+                return JsonConvert.DeserializeObject<TResponse>(responseText);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("PostAcync result convert exception", ex);
+            }
+        }
+        throw new Exception("PostAcync don't handle error http status code");
+    }
+
+    /// <summary>
+    /// Get api url for checking settings
+    /// </summary>
+    public async Task<string> AV100RequestString(CancellationToken token = default)
+    {
+        return ParamsBuilder(
+            _options.AV100RequestUrl(_userSettings.AV100Token, _options.OfferListOperation, _options.OfferListCountCommand),
+            _filter.YearStart, _filter.YearEnd, _filter.PriceStart, _filter.PriceEnd, _filter.DistanceStart, _filter.DistanceEnd,
+            _filter.RegionExternalIds, _filter.SourceExternalIds).ToString();
+    }
+
+    public async Task<long> AV100ReuestListCount(long fromId, long toId, CancellationToken token = default)
+    {
+        var url = ParamsBuilder(
+            _options.AV100RequestUrl(_userSettings.AV100Token, _options.OfferListOperation, _options.OfferListCountCommand),
+            _filter.YearStart, _filter.YearEnd, _filter.PriceStart, _filter.PriceEnd, _filter.DistanceStart, _filter.DistanceEnd,
+            _filter.RegionExternalIds, _filter.SourceExternalIds, fromId, toId).ToString();
+
+        var result = await PostAsync<AV100ResponseCount>(url, token);
+
+        return result.Count;
     }
 
     /// <summary>
@@ -37,64 +140,57 @@ public sealed class ExchangeService : IExchangeService
 
         var postData = System.Text.Json.JsonSerializer.Serialize(request);
 
-        var client = _httpClientFactory.CreateClient(_xOptions.HttpClientName);
-
-        var result = await client.PostAsync(
+        return await PostAsync<XLombardResponse>(
             _options.XLombardRequestUrl(_userSettings.XLombardAPIUrl, _userSettings.XLombardToken),
-            CreateContent(postData),
-            token);
-        
-        if (result.IsSuccessStatusCode)
-        {
-            var content = await result.Content.ReadAsStringAsync(token);
-            return JsonConvert.DeserializeObject<XLombardResponse>(content);
-        }
-
-        //TODO: log fail
-        return new XLombardResponse();
+            token,
+            postData);
     }
 
+    public async Task<XLombardResponse> XLRequestCreateLead(string clientName, string clientPhone, string clientComment, CancellationToken token = default)
+    {
+        var request = Mapper.GetXLombardOrderObj(_userSettings);
+
+        request.ClientPhone = clientPhone;
+        request.ClientName = clientName;
+        request.ClientComment = clientComment;
+
+        var postData = System.Text.Json.JsonSerializer.Serialize(request);
+
+        return await PostAsync<XLombardResponse>(
+            _options.XLombardRequestUrl(_userSettings.XLombardAPIUrl, _userSettings.XLombardToken),
+            token,
+            postData);
+    }
+
+    /// <summary>
+    /// Get prpfile info (amount queries, till date)
+    /// </summary>
     public async Task<AV100ResponseProfile> AV100RequestProfile(CancellationToken token = default)
     {
-        var client = _httpClientFactory.CreateClient(_xOptions.HttpClientName);        
-        var result = await client.PostAsync(
-            _options.AV100RequestUrl(_userSettings.AV100Token, "profile", string.Empty),
-            CreateContent(string.Empty),
-            token);
-
-        if (result.IsSuccessStatusCode)
-        {
-            var content = await result.Content.ReadAsStringAsync(token);
-            try
-            {
-                return JsonConvert.DeserializeObject<AV100ResponseProfile>(content);
-            }
-            catch (Exception ex)
-            {
-                //TODO: log fail
-                return new AV100ResponseProfile();
-            }
-        }
-
-        //TODO: log fail
-        return null;
+        return await PostAsync<AV100ResponseProfile>(
+            _options.AV100RequestUrl(_userSettings.AV100Token, _options.AV100ProfileOperation, string.Empty),
+            token
+            );
     }
 
-
-    public Task<ICollection<AV100ResponseOfferResultRow>> AV100GetListOffers(string key, string command, long regionId,
-        long priceStart, long remont = 0, CancellationToken token = default)
+    /// <summary>
+    /// Get auto record by filter
+    /// </summary>
+    public async Task<ICollection<AV100ResponseOfferResultRow>> AV100GetListOffers(long yearStart = default, long yearEnd = default,
+            long priceStart = default, long priceEnd = default, long distanceStart = default, long distanceEnd = default,
+            long[] regions = default, long[] sources = default, long fromId = default, long toId = default, CancellationToken token = default)
     {
-        throw new NotImplementedException();
+        var items = await PostAsync<AV100ResponseOffer>(
+            ParamsBuilder(_options.AV100RequestUrl(_userSettings.AV100Token, _options.OfferListOperation, _options.OfferListCommand),
+            yearStart, yearEnd, priceStart, priceEnd, distanceStart, distanceEnd, regions, sources, fromId, toId).ToString(), token);
+
+        return items.Result.ListOffer;
     }
 
-    private static string CleanRegionName(string durtyName)
+    public async Task<ICollection<AV100ResponseOfferResultRow>> AV100GetListOffers(long fromId, long toId, CancellationToken token = default)
     {
-        var result = durtyName;
-        if (result.Contains('('))
-            result = result.Substring(0, durtyName.IndexOf('('));
-
-        result = result.Replace("Республика", "").Replace("г.", "");
-        return result.Trim();
+        return await AV100GetListOffers(_filter.YearStart, _filter.YearEnd, _filter.PriceStart, _filter.PriceEnd, _filter.DistanceStart,
+            _filter.DistanceEnd, _filter.RegionExternalIds, _filter.SourceExternalIds, fromId, toId, token);
     }
 
     /// <summary>
@@ -102,26 +198,18 @@ public sealed class ExchangeService : IExchangeService
     /// </summary>
     public async Task<ICollection<AV100Region>> AV100RequestRegions(CancellationToken token = default)
     {
-        var client = _httpClientFactory.CreateClient(_xOptions.HttpClientName);
-        var result = await client.PostAsync(
+        var responseRegion = await PostAsync<AV100ResponseRegion>(
             _options.AV100RequestUrl(_userSettings.AV100Token, _options.AV100DictionaryAPIOperation, _options.AV100RegionAPIParameters),
-            CreateContent(string.Empty),
             token);
 
-        if (result.IsSuccessStatusCode)
-        {
-            var content = await result.Content.ReadAsStringAsync(token);
-            var response = JsonConvert.DeserializeObject<AV100ResponseRegion>(content) ?? new AV100ResponseRegion();
-            var regionList = response.Result.Regions.Select(x => new AV100Region
-            {
-                RegionId = x.RegionId,
-                Name = CleanRegionName(x.RegionName)
-            });
-            return regionList.ToArray();
-        }
+        if (responseRegion is null)
+            return null;
 
-        //TODO: log fail
-        return null;
+        return responseRegion.Result.Regions.Select(x => new AV100Region
+        {
+            RegionId = x.RegionId,
+            Name = CleanRegionName(x.RegionName)
+        }).ToArray();
     }
 
     /// <summary>
@@ -129,25 +217,86 @@ public sealed class ExchangeService : IExchangeService
     /// </summary>
     public async Task<ICollection<AV100Source>> AV100RequestSource(CancellationToken token = default)
     {
-        var client = _httpClientFactory.CreateClient(_xOptions.HttpClientName);
-        var result = await client.PostAsync(
+        var responseSource = await PostAsync<AV100ResponseSource>(
             _options.AV100RequestUrl(_userSettings.AV100Token, _options.AV100DictionaryAPIOperation, _options.AV100SourceAPIParameters),
-            CreateContent(string.Empty),
             token);
 
-        if (result.IsSuccessStatusCode)
-        {
-            var content = await result.Content.ReadAsStringAsync(token);
-            var response = JsonConvert.DeserializeObject<AV100ResponseSource>(content) ?? new AV100ResponseSource();
-            return response.Result.Sources.Select(Mapper.GetSource).ToArray();
-        }
+        if (responseSource is null)
+            return null;
 
-        //TODO: log fail
-        return null;
+        return responseSource.Result.Sources.Select(Mapper.GetSource).ToArray();
     }
 
-    private static StringContent CreateContent(string content)
+    private string CheckName(string name)
     {
-        return new StringContent(content, Encoding.UTF8, JsonContentType);
+        if (string.IsNullOrWhiteSpace(name))
+            return _options.UnknowContactface;
+        return name;
+    }
+
+    public async Task<ExchangeResult> AV100LoadRetro(CancellationToken token = default)
+    {
+        var firstItem = _context.AV100Records.OrderBy(r => r.AV100Id).FirstOrDefault();
+
+        if (firstItem is null)
+            throw new Exception("AV100CheckAndLoad method can't get lastId from DB");
+
+        return await AV100CheckAndLoad(0, firstItem.AV100Id, token);
+    }
+
+    public async Task<ExchangeResult> AV100CheckAndLoad(CancellationToken token = default)
+    {
+        var lastItem = _context.AV100Records.OrderByDescending(r => r.AV100Id).FirstOrDefault();
+
+        if (lastItem is null)
+            throw new Exception("AV100CheckAndLoad method can't get lastId from DB");
+
+        return await AV100CheckAndLoad(lastItem.AV100Id, 0, token);
+    }
+
+    public async Task<ExchangeResult> AV100CheckAndLoad(long fromId, long toId, CancellationToken token = default)
+    {
+        if (fromId == 0 && toId == 0)
+            return await AV100CheckAndLoad(token);
+
+        var availableCount = await AV100ReuestListCount(fromId, toId, token);
+
+        if (availableCount < _filter.PackCount)
+            return new ExchangeResult { Result = false, Message = $"Not anought available count in av100 == {availableCount}" };
+
+        var items = await AV100GetListOffers(fromId, toId, token);
+
+        var toInsert = new List<AV100RecordEntity>();
+
+        foreach (var item in items)
+        {
+            if (string.IsNullOrWhiteSpace(item.Phone))
+                continue;
+
+            if (_context.AV100Records.Any(z => z.AV100Id == item.ID))
+                continue;
+
+            var title = $"{item.Title}, {item.Price}р., {item.Url}";
+            var addToXl = await XLRequestCreateLead(
+                CheckName(item.Contactface),
+                item.Phone,
+                title,
+                token);
+
+            toInsert.Add(new AV100RecordEntity()
+            {
+                Title = title,
+                AV100Id = item.ID,
+                SucceededUpload = long.Parse(addToXl.data) > 0,
+            });
+        }
+
+        if (toInsert.Count > 0)
+        {
+            await _context.AV100Records.AddRangeAsync(toInsert.ToArray());
+            await _context.SaveChangesAsync(token);
+        }
+
+        return new ExchangeResult { Result = toInsert.Count > 0, SucceessfulCount = toInsert.Count, Message = "Successfuly loaded" };
     }
 }

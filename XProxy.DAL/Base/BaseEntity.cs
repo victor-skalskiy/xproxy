@@ -12,5 +12,5 @@ public class BaseEntityEntity : IEntity
         IsActive = true;
         CreateDate = DateTime.UtcNow;
         ModifyDate = DateTime.UtcNow;
-    }
+    }   
 }
