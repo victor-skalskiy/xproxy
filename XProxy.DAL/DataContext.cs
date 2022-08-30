@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace XProxy.DAL;
 
-public class DataContext : DbContext
+public class DataContext : IdentityDbContext
 {
     public DbSet<AV100FilterEntity> AV100Filters { get; set; }
     public DbSet<AV100RegionEntity> AV100Regions { get; set; }

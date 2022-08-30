@@ -4,61 +4,40 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>aspnet-XProxy.Web-1038565E-C520-4CA0-B344-E5360FB80E8B</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Xproxy.DAL.Migration" />
-    <None Remove="Npgsql.EntityFrameworkCore.PostgreSQL" />
-    <None Remove="Microsoft.EntityFrameworkCore.Design" />
-    <None Remove="Microsoft.EntityFrameworkCore" />
-    <None Remove="Microsoft.EntityFrameworkCore.Tools" />
-    <None Remove="Hangfire" />
-    <None Remove="Hangfire.Core" />
-    <None Remove="Hangfire.MemoryStorage" />
-    <None Remove="Hangfire.AspNetCore" />
-    <None Remove="Microsoft.Extensions.Http.Polly" />
-    <None Remove="Views\Filter\" />
-    <None Remove="jQuery" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.8" />
+    <PackageReference Include="Hangfire.Core" Version="1.7.31" />
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.7.31" />
+    <PackageReference Include="Hangfire.MemoryStorage" Version="1.7.0" />
+    <PackageReference Include="Npgsql" Version="6.0.6" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.6" />
   </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\XProxy.DAL\XProxy.DAL.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
     <ProjectReference Include="..\XProxy.Domain\XProxy.Domain.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
     <ProjectReference Include="..\XProxy.Interfaces\XProxy.Interfaces.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
     <ProjectReference Include="..\XProxy.Services\XProxy.Services.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
-    <ProjectReference Include="..\XProxy.DAL\XProxy.DAL.csproj">
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.6" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.8">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.8" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.8">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="Hangfire.Core" Version="1.7.31" />
-    <PackageReference Include="Hangfire.MemoryStorage" Version="1.7.0" />
-    <PackageReference Include="Hangfire.AspNetCore" Version="1.7.31" />
-    <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="6.0.8" />
-    <PackageReference Include="jQuery" Version="3.6.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Views\Filter\" />
-    <Folder Include="wwwroot\lib\jquery\dist\" />
-    <Folder Include="wwwroot\lib\" />
-    <Folder Include="wwwroot\lib\" />
-    <Folder Include="wwwroot\lib\bootstrap\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Remove="wwwroot\lib\jquery\dist\" />
-    <Content Remove="wwwroot\lib\" />
-    <Content Remove="wwwroot\lib\bootstrap\" />
+    <None Remove="Hangfire.Core" />
+    <None Remove="Hangfire.AspNetCore" />
+    <None Remove="Hangfire.MemoryStorage" />
+    <None Remove="Npgsql" />
+    <None Remove="Npgsql.EntityFrameworkCore.PostgreSQL" />
   </ItemGroup>
 </Project>
