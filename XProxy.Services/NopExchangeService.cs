@@ -20,11 +20,6 @@ public sealed class NopExchangeService : IExchangeService
         return Task.FromResult<ICollection<AV100ResponseOfferResultRow>>(Array.Empty<AV100ResponseOfferResultRow>());
     }
 
-    public Task<XLombardResponse> XLRequest(long id, CancellationToken token = default)
-    {
-        return Task.FromResult(new XLombardResponse());
-    }
-
     public Task<XLombardResponse> XLRequestCreateLead(string clientName, string clientPhone, string clientComment, CancellationToken token = default)
     {
         return Task.FromResult(new XLombardResponse());
@@ -50,9 +45,9 @@ public sealed class NopExchangeService : IExchangeService
         return Task.FromResult(new long());
     }
 
-    public Task<string> AV100RequestString(CancellationToken token = default)
+    public string AV100RequestString(CancellationToken token = default)
     {
-        return Task.FromResult(string.Empty);
+        return string.Empty;
     }
 
     public Task<ExchangeResult> AV100CheckAndLoad(long fromId, long toId, CancellationToken token = default)

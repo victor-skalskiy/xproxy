@@ -19,8 +19,6 @@ public interface IExchangeService
 
     Task<ICollection<AV100ResponseOfferResultRow>> AV100GetListOffers(long fromId, long toId, CancellationToken token = default);
 
-    Task<XLombardResponse> XLRequest(long id, CancellationToken token = default);
-
     Task<XLombardResponse> XLRequestCreateLead(string clientName, string clientPhone, string clientComment,
         CancellationToken token = default);
 
@@ -40,7 +38,7 @@ public interface IExchangeService
     Task<long> AV100ReuestListCount(long fromId, long toId, CancellationToken token = default);
 
 
-    Task<string> AV100RequestString(CancellationToken token = default);
+    string AV100RequestString(CancellationToken token = default);
 
 
     Task<ExchangeResult> AV100CheckAndLoad(long fromId, long toId, CancellationToken token = default);

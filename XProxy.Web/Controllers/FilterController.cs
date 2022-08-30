@@ -89,7 +89,7 @@ public class FilterController : Controller
                 nameof(AV100Source.Id),
                 nameof(AV100Source.Name),
                 model.SourceIds),
-            FilterRequestString = await exchangeService.AV100RequestString(HttpContext.RequestAborted),
+            FilterRequestString = exchangeService.AV100RequestString(HttpContext.RequestAborted),
             FilterRequestCounter = await exchangeService.AV100ReuestListCount(0, 0, HttpContext.RequestAborted)
         });
     }

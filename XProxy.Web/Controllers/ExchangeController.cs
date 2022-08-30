@@ -54,7 +54,6 @@ public class ExchangeController : Controller
         try
         {
             var exchangeService = await _exchangeServiceFactory.CreateDefaultAsync();
-            var result = exchangeService.AV100LoadRetro(HttpContext.RequestAborted);
             return Json(await exchangeService.AV100LoadRetro(HttpContext.RequestAborted));
         }
         catch (Exception ex)

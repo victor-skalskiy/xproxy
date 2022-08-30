@@ -3,6 +3,7 @@ using XProxy.Domain;
 using Newtonsoft.Json;
 using System.Text;
 using XProxy.DAL;
+using Microsoft.EntityFrameworkCore;
 
 namespace XProxy.Services;
 
@@ -31,6 +32,8 @@ public sealed class ExchangeService : IExchangeService
         _filter = filter;
         _context = context;
     }
+
+    #region private helper methods
 
     private static StringContent CreateContent(string content)
     {
@@ -76,6 +79,9 @@ public sealed class ExchangeService : IExchangeService
         return sb;
     }
 
+    /// <summary>
+    /// Cleaninng some titles in regions
+    /// </summary>
     private static string CleanRegionName(string durtyName)
     {
         var result = durtyName;
@@ -86,10 +92,28 @@ public sealed class ExchangeService : IExchangeService
         return result.Trim();
     }
 
-    private async Task<TResponse> PostAsync<TResponse>(string url, CancellationToken token = default, string? content = null)
+    /// <summary>
+    /// Check for emptines and return temlate if is it true
+    /// </summary>
+    private string CheckNamesForEmptiness(string name)
     {
-        var client = _httpClientFactory.CreateClient(_xOptions.HttpClientName);
-        var result = await client.PostAsync(url, CreateContent(content), token);
+        if (string.IsNullOrWhiteSpace(name))
+            return _options.UnknowContactface;
+        return name;
+    }
+
+    private async Task<TResponse> PostAsync<TResponse>(string url, CancellationToken token = default)
+    {
+        return await PostAsync<TResponse>(url, null, token);
+    }
+
+    /// <summary>
+    /// Execute request and return deserialiazed data
+    /// </summary>
+    private async Task<TResponse> PostAsync<TResponse>(string url, string? content = null, CancellationToken token = default)
+    {
+        var httpClient = _httpClientFactory.CreateClient(_xOptions.HttpClientName);
+        var result = await httpClient.PostAsync(url, CreateContent(content), token);
         if (result.IsSuccessStatusCode)
         {
             var responseText = await result.Content.ReadAsStringAsync(token);
@@ -102,13 +126,16 @@ public sealed class ExchangeService : IExchangeService
                 throw new Exception("PostAcync result convert exception", ex);
             }
         }
-        throw new Exception("PostAcync don't handle error http status code");
+        throw new Exception($"PostAcync don't handle error http status code: {result.StatusCode}, to string: {result.ToString()}, " +
+            $"request url: {url}, post content: {content}");
     }
 
+    #endregion private helper methods
+
     /// <summary>
-    /// Get api url for checking settings
+    /// Get api url for checking settings 'by hands'
     /// </summary>
-    public async Task<string> AV100RequestString(CancellationToken token = default)
+    public string AV100RequestString(CancellationToken token = default)
     {
         return ParamsBuilder(
             _options.AV100RequestUrl(_userSettings.AV100Token, _options.OfferListOperation, _options.OfferListCountCommand),
@@ -116,6 +143,9 @@ public sealed class ExchangeService : IExchangeService
             _filter.RegionExternalIds, _filter.SourceExternalIds).ToString();
     }
 
+    /// <summary>
+    /// Get car counts available for fetch by filter
+    /// </summary>
     public async Task<long> AV100ReuestListCount(long fromId, long toId, CancellationToken token = default)
     {
         var url = ParamsBuilder(
@@ -129,23 +159,8 @@ public sealed class ExchangeService : IExchangeService
     }
 
     /// <summary>
-    /// Connect to XLombard
+    /// Push data to XLombard API for lead creation
     /// </summary>
-    public async Task<XLombardResponse> XLRequest(long id, CancellationToken token = default)
-    {
-        var request = Mapper.GetXLombardOrderObj(_userSettings);
-
-        request.ClientPhone = "+79257406105";
-        request.ClientName = "Василий Кузьмич";
-
-        var postData = System.Text.Json.JsonSerializer.Serialize(request);
-
-        return await PostAsync<XLombardResponse>(
-            _options.XLombardRequestUrl(_userSettings.XLombardAPIUrl, _userSettings.XLombardToken),
-            token,
-            postData);
-    }
-
     public async Task<XLombardResponse> XLRequestCreateLead(string clientName, string clientPhone, string clientComment, CancellationToken token = default)
     {
         var request = Mapper.GetXLombardOrderObj(_userSettings);
@@ -158,8 +173,9 @@ public sealed class ExchangeService : IExchangeService
 
         return await PostAsync<XLombardResponse>(
             _options.XLombardRequestUrl(_userSettings.XLombardAPIUrl, _userSettings.XLombardToken),
-            token,
-            postData);
+            postData,
+            token
+            );
     }
 
     /// <summary>
@@ -187,6 +203,9 @@ public sealed class ExchangeService : IExchangeService
         return items.Result.ListOffer;
     }
 
+    /// <summary>
+    /// Fetch new or retro items from AV100 api by filter 
+    /// </summary>
     public async Task<ICollection<AV100ResponseOfferResultRow>> AV100GetListOffers(long fromId, long toId, CancellationToken token = default)
     {
         return await AV100GetListOffers(_filter.YearStart, _filter.YearEnd, _filter.PriceStart, _filter.PriceEnd, _filter.DistanceStart,
@@ -227,16 +246,12 @@ public sealed class ExchangeService : IExchangeService
         return responseSource.Result.Sources.Select(Mapper.GetSource).ToArray();
     }
 
-    private string CheckName(string name)
-    {
-        if (string.IsNullOrWhiteSpace(name))
-            return _options.UnknowContactface;
-        return name;
-    }
-
+    /// <summary>
+    /// Fetch retro items from AV100 api and push it to XLombard api
+    /// </summary>
     public async Task<ExchangeResult> AV100LoadRetro(CancellationToken token = default)
     {
-        var firstItem = _context.AV100Records.OrderBy(r => r.AV100Id).FirstOrDefault();
+        var firstItem = await _context.AV100Records.OrderBy(r => r.AV100Id).FirstOrDefaultAsync();
 
         if (firstItem is null)
             throw new Exception("AV100CheckAndLoad method can't get lastId from DB");
@@ -244,9 +259,12 @@ public sealed class ExchangeService : IExchangeService
         return await AV100CheckAndLoad(0, firstItem.AV100Id, token);
     }
 
+    /// <summary>
+    /// Overload AV100CheckAndLoad method for default request's
+    /// </summary>
     public async Task<ExchangeResult> AV100CheckAndLoad(CancellationToken token = default)
     {
-        var lastItem = _context.AV100Records.OrderByDescending(r => r.AV100Id).FirstOrDefault();
+        var lastItem = await _context.AV100Records.OrderByDescending(r => r.AV100Id).FirstOrDefaultAsync();
 
         if (lastItem is null)
             throw new Exception("AV100CheckAndLoad method can't get lastId from DB");
@@ -254,6 +272,9 @@ public sealed class ExchangeService : IExchangeService
         return await AV100CheckAndLoad(lastItem.AV100Id, 0, token);
     }
 
+    /// <summary>
+    /// Fetch new items from AV100 api and push it to XLombard api if it satisfies filter conditions
+    /// </summary>
     public async Task<ExchangeResult> AV100CheckAndLoad(long fromId, long toId, CancellationToken token = default)
     {
         if (fromId == 0 && toId == 0)
@@ -276,9 +297,9 @@ public sealed class ExchangeService : IExchangeService
             if (_context.AV100Records.Any(z => z.AV100Id == item.ID))
                 continue;
 
-            var title = $"{item.Title}, {item.Price}р., {item.Url}";
+            var title = $"{item.Title}, {item.Price}р., {item.Credate}, {item.Url}";
             var addToXl = await XLRequestCreateLead(
-                CheckName(item.Contactface),
+                CheckNamesForEmptiness(item.Contactface),
                 item.Phone,
                 title,
                 token);
