@@ -1,3 +1,5 @@
+using Newtonsoft.Json.Linq;
+using XProxy.DAL;
 using XProxy.Interfaces;
 
 namespace XProxy.Services;
@@ -7,34 +9,41 @@ public sealed class ExchangeServiceFactory : IExchangeServiceFactory
     private readonly IXProxyOptions _xProxyOptions;
     private readonly IUserSettingsStorage _userSettingsStorage;
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IFilterStorage _filterStorage;
+    private readonly DataContext _context;
 
     public ExchangeServiceFactory(
         IXProxyOptions xProxyOptions,
         IUserSettingsStorage userSettingsStorage,
-        IHttpClientFactory httpClientFactory)
+        IHttpClientFactory httpClientFactory,
+        IFilterStorage filterStorage,
+        DataContext context)
     {
         _xProxyOptions = xProxyOptions;
         _userSettingsStorage = userSettingsStorage;
         _httpClientFactory = httpClientFactory;
+        _filterStorage = filterStorage;
+        _context = context;
     }
 
     #region Implementation of IExchangeServiceFactory
 
-    public Task<IExchangeService> CreateAsync(long userSettingsId, CancellationToken cancellationToken = default)
+    public Task<IExchangeService> CreateAsync(long userSettingsId, long av100filterId, CancellationToken cancellationToken = default)
     {
-        return InternalCreate(userSettingsId, cancellationToken);
+        return InternalCreate(userSettingsId, av100filterId, cancellationToken);
     }
 
     public Task<IExchangeService> CreateDefaultAsync(CancellationToken cancellationToken = default)
     {
-        return InternalCreate(_xProxyOptions.DefaultUserSettingsId, cancellationToken);
+        return InternalCreate(_xProxyOptions.DefaultUserSettingsId, _xProxyOptions.DefaultFilterId, cancellationToken);
     }
 
     #endregion
 
     private async Task<IExchangeService> InternalCreate(
         long userSettingsId,
-        CancellationToken cancellationToken = default)
+        long av100filterId,
+        CancellationToken token = default)
     {
         if (!_xProxyOptions.UpLink)
         {
@@ -42,12 +51,14 @@ public sealed class ExchangeServiceFactory : IExchangeServiceFactory
         }
 
         return new ExchangeService(
-            await _userSettingsStorage.GetUserSettingsAsync(userSettingsId, cancellationToken),
+            await _userSettingsStorage.GetUserSettingsAsync(userSettingsId, token),
             new ExchangeServiceOptions(
                 _xProxyOptions.AV100DictionaryAPIOperation,
                 _xProxyOptions.AV100RegionAPIParameters,
                 _xProxyOptions.AV100SourceAPIParameters),
-            _httpClientFactory, _xProxyOptions);
-
+        _httpClientFactory,
+            await _filterStorage.GetFilterAsync(av100filterId, token),
+            _xProxyOptions,
+            _context);
     }
 }

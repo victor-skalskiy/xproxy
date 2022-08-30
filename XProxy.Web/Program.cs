@@ -22,7 +22,6 @@ builder.Services
     .AddScoped<ISettingsService, SettingsService>()
     .AddScoped<IFiltersService, FiltersService>()
     .AddScoped<IExchangeServiceFactory, ExchangeServiceFactory>()
-    .AddScoped<IAV100ExchangeServiceFactory, AV100ExchangeServiceFactory>()
     .AddSingleton<IXProxyOptions, XProxyOptions>()
     .AddHangfire(hangfire =>
         hangfire
@@ -40,11 +39,9 @@ builder.Services.AddHttpClient("MyBaseClient", client =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Settings/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -62,4 +59,3 @@ app.MapControllerRoute(
 app.UseHangfireDashboard();
 
 app.Run();
-

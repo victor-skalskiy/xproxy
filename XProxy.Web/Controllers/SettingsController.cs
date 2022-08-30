@@ -11,17 +11,20 @@ public class SettingsController : Controller
     private readonly ISettingsService _settingsService;
     private readonly IFiltersService _filtersService;
     private readonly IExchangeServiceFactory _exchangeServiceFactory;
+    private readonly IXProxyOptions _options;
 
     public SettingsController(
         ISettingsService settingsService,
         IFiltersService filtersService,
         IExchangeServiceFactory exchangeServiceFactory,
+        IXProxyOptions xProxyOptions,
         ILogger<SettingsController> logger)
     {
         _settingsService = settingsService;
         _logger = logger;
         _filtersService = filtersService;
         _exchangeServiceFactory = exchangeServiceFactory;
+        _options = xProxyOptions;
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -35,8 +38,9 @@ public class SettingsController : Controller
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        var userSettingsId = 1;
-        var exchangeService = await _exchangeServiceFactory.CreateAsync(userSettingsId);
+        var exchangeService =
+            await _exchangeServiceFactory.CreateAsync(_options.DefaultUserSettingsId, _options.DefaultFilterId, HttpContext.RequestAborted);
+
         return View(new IndexModel
         {
             Settings = await _settingsService.GetSettingsAsync(HttpContext.RequestAborted),
@@ -82,14 +86,6 @@ public class SettingsController : Controller
             model.XLombardFilialId, model.XLombardDealTypeId, model.XLombardSource, HttpContext.RequestAborted);
 
         return RedirectToAction("Index");
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> CheckConnection()
-    {
-        var exchangeService = await _exchangeServiceFactory.CreateAsync(1);
-        var result = await exchangeService.XLRequest(1, HttpContext.RequestAborted);
-        return result.state > 0 ? RedirectToAction("Index") : RedirectToAction("Error");
     }
 
     [HttpGet]

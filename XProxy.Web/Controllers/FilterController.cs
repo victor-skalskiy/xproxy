@@ -12,14 +12,18 @@ public class FilterController : Controller
     private readonly ILogger<SettingsController> _logger;
     private readonly ISettingsService _settingsService;
     private readonly IFiltersService _filtersService;
-    private readonly IAV100ExchangeServiceFactory _AV100ExchangeServiceFactory;
+    private readonly IExchangeServiceFactory _exchangeServiceFactory;
 
-    public FilterController(ILogger<SettingsController> logger, ISettingsService settingsService, IFiltersService filtersService, IAV100ExchangeServiceFactory aV100ExchangeServiceFactory)
+    public FilterController(
+        ILogger<SettingsController> logger,
+        ISettingsService settingsService,
+        IFiltersService filtersService,
+        IExchangeServiceFactory exchangeServiceFactory)
     {
         _settingsService = settingsService;
         _logger = logger;
         _filtersService = filtersService;
-        _AV100ExchangeServiceFactory = aV100ExchangeServiceFactory;
+        _exchangeServiceFactory = exchangeServiceFactory;
     }
 
     [HttpGet]
@@ -58,7 +62,7 @@ public class FilterController : Controller
     [HttpGet]
     public async Task<IActionResult> Edit(long id)
     {
-        var aV100ExchangeService = await _AV100ExchangeServiceFactory.CreateDefaultAsync();
+        var exchangeService = await _exchangeServiceFactory.CreateDefaultAsync(HttpContext.RequestAborted);
         var model = await _filtersService.GetFilterAsync(id, HttpContext.RequestAborted);
 
         return View("Edit", new FilterEditModel
@@ -85,8 +89,8 @@ public class FilterController : Controller
                 nameof(AV100Source.Id),
                 nameof(AV100Source.Name),
                 model.SourceIds),
-            FilterRequestString = await aV100ExchangeService.AV100RequestString(HttpContext.RequestAborted),
-            FilterRequestCounter = await aV100ExchangeService.AV100ReuestListCount(0, 0, HttpContext.RequestAborted)
+            FilterRequestString = exchangeService.AV100RequestString(HttpContext.RequestAborted),
+            FilterRequestCounter = await exchangeService.AV100ReuestListCount(0, 0, HttpContext.RequestAborted)
         });
     }
 

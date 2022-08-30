@@ -6,7 +6,7 @@ public class AV100RecordEntity : BaseEntityEntity
 
     public long AV100Id { get; set; }
 
-    public string Title { get; set; }
+    public string? Title { get; set; }
 
     public bool SucceededUpload { get; set; }
 }
