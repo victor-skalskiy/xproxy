@@ -4,6 +4,7 @@ using XProxy.Web.Models;
 using XProxy.Interfaces;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using XProxy.Domain;
+using Microsoft.AspNetCore.Authorization;
 
 namespace XProxy.Web.Controllers;
 
@@ -27,6 +28,7 @@ public class FilterController : Controller
     }
 
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> Create()
     {
         var model = new FilterEditModel
@@ -45,6 +47,7 @@ public class FilterController : Controller
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> Create(FilterEditModel model)
     {
         if (ModelState.IsValid)
@@ -60,6 +63,7 @@ public class FilterController : Controller
     }
 
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> Edit(long id)
     {
         var exchangeService = await _exchangeServiceFactory.CreateDefaultAsync(HttpContext.RequestAborted);
@@ -95,6 +99,7 @@ public class FilterController : Controller
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> Edit(FilterEditModel model, long id)
     {
         if (ModelState.IsValid)

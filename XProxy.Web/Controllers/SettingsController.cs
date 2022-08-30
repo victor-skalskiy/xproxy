@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using XProxy.Web.Models;
 using XProxy.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 namespace XProxy.Web.Controllers;
 
@@ -33,9 +34,8 @@ public class SettingsController : Controller
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 
-    public IActionResult Privacy() => View();
-
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> Index()
     {
         var exchangeService =
@@ -50,12 +50,14 @@ public class SettingsController : Controller
     }
 
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> Create()
     {
         return View("Create", new SettingsEditModel());
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> Create(SettingsEditModel model)
     {
         var resutl = await _settingsService.CreateUserSettingsAsync(model.Av100Token, model.XLombardAPIUrl, model.XLombardToken,
@@ -65,6 +67,7 @@ public class SettingsController : Controller
     }
 
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> Edit(long id)
     {
         var result = await _settingsService.GetSettingsItemAsync(id, HttpContext.RequestAborted);
@@ -80,6 +83,7 @@ public class SettingsController : Controller
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> Edit(SettingsEditModel model, long id)
     {
         var resutl = await _settingsService.UpdateUserSettingsAsync(id, model.Av100Token, model.XLombardAPIUrl, model.XLombardToken,
@@ -89,6 +93,7 @@ public class SettingsController : Controller
     }
 
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> LoadDictionaries()
     {
         var exchangeService = await _exchangeServiceFactory.CreateDefaultAsync();

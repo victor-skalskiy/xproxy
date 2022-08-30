@@ -30,7 +30,7 @@
                         <th scope="row">@item.Id</th>
                         <td>@item.XLombardToken</td>
                         <td>@item.XLombardAPIUrl</td>
-                        <td>@item.Av100Token</td>                        
+                        <td>@item.Av100Token</td>
                         <td>@Html.ActionLink("Edit", "Edit", "Settings", new { id = item.Id }, new { @class = "btn btn-primary" })</td>
                     </tr>
                 }
@@ -48,7 +48,7 @@ else
 }
 <br />
 @if (Model.Filters != null && Model.Filters.Count > 0)
-    {
+{
     <h2>AV100 API Settings</h2>
     <table class="table">
         <thead class=".thead-dark">

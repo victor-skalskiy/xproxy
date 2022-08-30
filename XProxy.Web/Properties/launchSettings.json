@@ -11,7 +11,7 @@
     "XProxy.Web": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "https://localhost:7263;http://localhost:5143",
+      "applicationUrl": "http://localhost:20539",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
