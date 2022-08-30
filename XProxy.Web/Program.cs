@@ -5,6 +5,7 @@ using XProxy.DAL;
 using XProxy.Interfaces;
 using XProxy.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +33,7 @@ builder.Services
             .UseDefaultTypeSerializer()
             .UseMemoryStorage());
 
+
 builder.Services.AddHttpClient("MyBaseClient", client =>
 {
     client.DefaultRequestHeaders.Add("Accept", "application/json");
@@ -39,10 +41,17 @@ builder.Services.AddHttpClient("MyBaseClient", client =>
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(
+builder.Services
+    .AddTransient<IEmailSender, EmailService>()
+    .AddDefaultIdentity<IdentityUser>(
     options =>
     {
         options.SignIn.RequireConfirmedAccount = true;
+        options.SignIn.RequireConfirmedEmail = true;
+        options.Password.RequireDigit = false;
+        options.Password.RequiredLength = 4;
+        options.Password.RequireUppercase = false;
+        options.Password.RequireNonAlphanumeric = false;
     })
     .AddEntityFrameworkStores<DataContext>();
 
