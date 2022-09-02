@@ -16,6 +16,7 @@ public sealed class ExchangeService : IExchangeService
     private readonly IXProxyOptions _xOptions;
     private readonly AV100Filter _filter;
     private readonly DataContext _context;
+    private readonly ITelegramBotService _telegramBotService;
 
     public ExchangeService(
         UserSettings userSettings,
@@ -23,6 +24,7 @@ public sealed class ExchangeService : IExchangeService
         IHttpClientFactory httpClientFactory,
         AV100Filter filter,
         IXProxyOptions xProxyOptions,
+        ITelegramBotService telegramBotService,
         DataContext context)
     {
         _userSettings = userSettings;
@@ -31,6 +33,7 @@ public sealed class ExchangeService : IExchangeService
         _xOptions = xProxyOptions;
         _filter = filter;
         _context = context;
+        _telegramBotService = telegramBotService;
     }
 
     #region private helper methods
@@ -283,7 +286,10 @@ public sealed class ExchangeService : IExchangeService
         var availableCount = await AV100ReuestListCount(fromId, toId, token);
 
         if (availableCount < _filter.PackCount)
+        {
+            await _telegramBotService.SendMessageToAdmin($"Not inserted, available count: {availableCount}");
             return new ExchangeResult { Result = false, Message = $"Not anought available count in av100 == {availableCount}" };
+        }
 
         var items = await AV100GetListOffers(fromId, toId, token);
 
@@ -317,7 +323,7 @@ public sealed class ExchangeService : IExchangeService
             await _context.AV100Records.AddRangeAsync(toInsert.ToArray());
             await _context.SaveChangesAsync(token);
         }
-
+        await _telegramBotService.SendMessageToAdmin($"Inserted: {toInsert.Count}");
         return new ExchangeResult { Result = toInsert.Count > 0, SucceessfulCount = toInsert.Count, Message = "Successfuly loaded" };
     }
 }

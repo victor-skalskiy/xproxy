@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using XProxy.Web.Models;
 using XProxy.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Hangfire;
 
 namespace XProxy.Web.Controllers;
 
@@ -13,19 +14,22 @@ public class SettingsController : Controller
     private readonly IFiltersService _filtersService;
     private readonly IExchangeServiceFactory _exchangeServiceFactory;
     private readonly IXProxyOptions _options;
+    private readonly ITelegramBotService _telegramBotService;
 
     public SettingsController(
         ISettingsService settingsService,
         IFiltersService filtersService,
         IExchangeServiceFactory exchangeServiceFactory,
         IXProxyOptions xProxyOptions,
+        ITelegramBotService telegramBotService,
         ILogger<SettingsController> logger)
     {
         _settingsService = settingsService;
-        _logger = logger;
         _filtersService = filtersService;
         _exchangeServiceFactory = exchangeServiceFactory;
         _options = xProxyOptions;
+        _telegramBotService = telegramBotService;
+        _logger = logger;
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -38,6 +42,8 @@ public class SettingsController : Controller
     [Authorize]
     public async Task<IActionResult> Index()
     {
+        await _telegramBotService.SendMessageToAdmin("It's alive!");
+
         var exchangeService =
             await _exchangeServiceFactory.CreateAsync(_options.DefaultUserSettingsId, _options.DefaultFilterId, HttpContext.RequestAborted);
 
@@ -63,7 +69,7 @@ public class SettingsController : Controller
         var resutl = await _settingsService.CreateUserSettingsAsync(model.Av100Token, model.XLombardAPIUrl, model.XLombardToken,
             model.XLombardFilialId, model.XLombardDealTypeId, model.XLombardSource, HttpContext.RequestAborted);
 
-        return Redirect("/");
+        return RedirectToAction(nameof(Index));
     }
 
     [HttpGet]
@@ -89,7 +95,7 @@ public class SettingsController : Controller
         var resutl = await _settingsService.UpdateUserSettingsAsync(id, model.Av100Token, model.XLombardAPIUrl, model.XLombardToken,
             model.XLombardFilialId, model.XLombardDealTypeId, model.XLombardSource, HttpContext.RequestAborted);
 
-        return RedirectToAction("Index");
+        return RedirectToAction(nameof(Index));
     }
 
     [HttpGet]
@@ -97,7 +103,7 @@ public class SettingsController : Controller
     public async Task<IActionResult> LoadDictionaries()
     {
         var exchangeService = await _exchangeServiceFactory.CreateDefaultAsync();
-        
+
         var regions = await exchangeService.AV100RequestRegions(HttpContext.RequestAborted);
         if (regions is not null)
             await _filtersService.CreateRegionsAsync(regions.ToDictionary(z => z.RegionId, z => z.Name), HttpContext.RequestAborted);
@@ -106,6 +112,6 @@ public class SettingsController : Controller
         if (sources is not null)
             await _filtersService.CreateSourcesAsync(sources.ToDictionary(z => z.SourceId, z => z.Name), HttpContext.RequestAborted);
 
-        return RedirectToAction("Index");
+        return RedirectToAction(nameof(Index));
     }
 }

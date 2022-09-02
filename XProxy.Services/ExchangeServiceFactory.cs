@@ -11,12 +11,14 @@ public sealed class ExchangeServiceFactory : IExchangeServiceFactory
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IFilterStorage _filterStorage;
     private readonly DataContext _context;
+    private readonly ITelegramBotService _telegramBotService;
 
     public ExchangeServiceFactory(
         IXProxyOptions xProxyOptions,
         IUserSettingsStorage userSettingsStorage,
         IHttpClientFactory httpClientFactory,
         IFilterStorage filterStorage,
+        ITelegramBotService telegramBotService,
         DataContext context)
     {
         _xProxyOptions = xProxyOptions;
@@ -24,6 +26,7 @@ public sealed class ExchangeServiceFactory : IExchangeServiceFactory
         _httpClientFactory = httpClientFactory;
         _filterStorage = filterStorage;
         _context = context;
+        _telegramBotService = telegramBotService;
     }
 
     #region Implementation of IExchangeServiceFactory
@@ -59,6 +62,7 @@ public sealed class ExchangeServiceFactory : IExchangeServiceFactory
         _httpClientFactory,
             await _filterStorage.GetFilterAsync(av100filterId, token),
             _xProxyOptions,
+            _telegramBotService,
             _context);
     }
 }

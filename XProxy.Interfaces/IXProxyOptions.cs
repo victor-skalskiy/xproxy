@@ -22,5 +22,9 @@ namespace XProxy.Interfaces
         string AV100SourceAPIParameters { get; }
 
         string HttpClientName { get; }
+
+        string TelegramBotToken { get; }
+
+        long TelegramAdminChatId { get; }
     }
 }

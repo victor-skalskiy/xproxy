@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 using XProxy.Domain;
 using XProxy.Interfaces;
@@ -14,12 +15,14 @@ public class ExchangeController : Controller
     private readonly IXProxyOptions _options;
     private readonly ISettingsService _settingsService;
     private readonly IUserSettingsStorage _userSettingsStorage;
+    private readonly IRecurringJobManager _recurringJobManager;
 
     public ExchangeController(
         IExchangeServiceFactory exchangeServiceFactory,
         IXProxyOptions xProxyOptions,
         ISettingsService settingsService,
         IUserSettingsStorage userSettingsStorage,
+        IRecurringJobManager recurringJobManager,
         ILogger<ExchangeController> logger)
     {
         _logger = logger;
@@ -27,6 +30,7 @@ public class ExchangeController : Controller
         _exchangeServiceFactory = exchangeServiceFactory;
         _settingsService = settingsService;
         _userSettingsStorage = userSettingsStorage;
+        _recurringJobManager = recurringJobManager;
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -60,6 +64,17 @@ public class ExchangeController : Controller
         {
             _logger.Log(LogLevel.Debug, ex, "Exchange/LoadRetro exception");
             return Json(new ExchangeResult { Result = false, Message = ex.Message });
-        }        
+        }
+    }
+
+    public async Task<IActionResult> StartHangfire()
+    {
+        var exchangeService = await _exchangeServiceFactory.CreateDefaultAsync();
+        _recurringJobManager.AddOrUpdate(
+            "CheckAndPull",
+            () => exchangeService.AV100CheckAndLoad(HttpContext.RequestAborted),
+            Cron.Minutely);
+
+        return Redirect("/");
     }
 }
