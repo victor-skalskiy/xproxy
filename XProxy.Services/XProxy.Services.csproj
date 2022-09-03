@@ -12,6 +12,7 @@
     <None Remove="Microsoft.Extensions.Http.Polly" />
     <None Remove="Flurl.Http" />
     <None Remove="Microsoft.AspNetCore.Identity.UI" />
+    <None Remove="Telegram.Bot" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.8" />
@@ -19,6 +20,7 @@
     <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="6.0.8" />
     <PackageReference Include="Flurl.Http" Version="3.2.4" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.8" />
+    <PackageReference Include="Telegram.Bot" Version="18.0.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\XProxy.DAL\XProxy.DAL.csproj" />

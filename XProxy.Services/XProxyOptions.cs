@@ -7,7 +7,8 @@ public class XProxyOptions : IXProxyOptions
 {
     public XProxyOptions(IConfiguration configuration)
     {
-        UpLink = configuration.GetSection("AppSetting").GetSection("Uplink").Value == "True";
+        var appSettings = configuration.GetSection("AppSetting");
+        UpLink = appSettings.GetSection("Uplink").Value == "True";
         DefaultUserSettingsId = 1;
         AV100DictionaryAPIOperation = "dictionaries";
         AV100RegionAPIParameters = "name=offersregion";

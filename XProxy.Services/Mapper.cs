@@ -6,7 +6,8 @@ namespace XProxy.Services;
 public static class Mapper
 {
     public static UserSettingsEntity FillSettingsEntity(UserSettingsEntity userSettingsEntity, string av100Token,
-        string xLombardAPIUrl, string xLombardToken, long xLombardFilialId, long xLombardDealTypeId, string xLombardSource)
+        string xLombardAPIUrl, string xLombardToken, long xLombardFilialId, long xLombardDealTypeId, string xLombardSource,
+        string telegramBotToken, long telegramAdminChatId)
     {
         userSettingsEntity.AV100Token = av100Token;
         userSettingsEntity.XLombardAPIUrl = xLombardAPIUrl;
@@ -15,6 +16,8 @@ public static class Mapper
         userSettingsEntity.XLombardFilialId = xLombardFilialId;
         userSettingsEntity.XLombardSource = xLombardSource;
         userSettingsEntity.XLombardDealTypeId = xLombardDealTypeId;
+        userSettingsEntity.TelegramAdminChatId = telegramAdminChatId;
+        userSettingsEntity.TelegramBotToken = telegramBotToken;
 
         return userSettingsEntity;
     }
@@ -27,7 +30,9 @@ public static class Mapper
             XLombardToken = userSettingsEntity.XLombardToken,
             XLombardFilialId = userSettingsEntity.XLombardFilialId,
             XLombardSource = userSettingsEntity.XLombardSource,
-            XLombardDealTypeId = userSettingsEntity.XLombardDealTypeId
+            XLombardDealTypeId = userSettingsEntity.XLombardDealTypeId,
+            TelegramAdminChatId = userSettingsEntity.TelegramAdminChatId,
+            TelegramBotToken = userSettingsEntity.TelegramBotToken
         };
     public static UserSettingsItem GetUserSettingsItem(UserSettingsEntity userSettingsEntity)
         => new UserSettingsItem

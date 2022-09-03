@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using XProxy.Web.Models;
 using XProxy.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Hangfire;
 
 namespace XProxy.Web.Controllers;
 
@@ -22,10 +23,10 @@ public class SettingsController : Controller
         ILogger<SettingsController> logger)
     {
         _settingsService = settingsService;
-        _logger = logger;
         _filtersService = filtersService;
         _exchangeServiceFactory = exchangeServiceFactory;
         _options = xProxyOptions;
+        _logger = logger;
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -61,9 +62,10 @@ public class SettingsController : Controller
     public async Task<IActionResult> Create(SettingsEditModel model)
     {
         var resutl = await _settingsService.CreateUserSettingsAsync(model.Av100Token, model.XLombardAPIUrl, model.XLombardToken,
-            model.XLombardFilialId, model.XLombardDealTypeId, model.XLombardSource, HttpContext.RequestAborted);
+            model.XLombardFilialId, model.XLombardDealTypeId, model.XLombardSource, model.TelegramBotToken, model.TelegramAdminChatId,
+            HttpContext.RequestAborted);
 
-        return Redirect("/");
+        return RedirectToAction(nameof(Index));
     }
 
     [HttpGet]
@@ -78,7 +80,9 @@ public class SettingsController : Controller
             XLombardToken = result.XLombardToken,
             XLombardDealTypeId = result.XLombardDealTypeId,
             XLombardFilialId = result.XLombardFilialId,
-            XLombardSource = result.XLombardSource
+            XLombardSource = result.XLombardSource,
+            TelegramBotToken = result.TelegramBotToken,
+            TelegramAdminChatId = result.TelegramAdminChatId
         });
     }
 
@@ -87,9 +91,10 @@ public class SettingsController : Controller
     public async Task<IActionResult> Edit(SettingsEditModel model, long id)
     {
         var resutl = await _settingsService.UpdateUserSettingsAsync(id, model.Av100Token, model.XLombardAPIUrl, model.XLombardToken,
-            model.XLombardFilialId, model.XLombardDealTypeId, model.XLombardSource, HttpContext.RequestAborted);
+            model.XLombardFilialId, model.XLombardDealTypeId, model.XLombardSource, model.TelegramBotToken, model.TelegramAdminChatId,
+            HttpContext.RequestAborted);
 
-        return RedirectToAction("Index");
+        return RedirectToAction(nameof(Index));
     }
 
     [HttpGet]
@@ -97,7 +102,7 @@ public class SettingsController : Controller
     public async Task<IActionResult> LoadDictionaries()
     {
         var exchangeService = await _exchangeServiceFactory.CreateDefaultAsync();
-        
+
         var regions = await exchangeService.AV100RequestRegions(HttpContext.RequestAborted);
         if (regions is not null)
             await _filtersService.CreateRegionsAsync(regions.ToDictionary(z => z.RegionId, z => z.Name), HttpContext.RequestAborted);
@@ -106,6 +111,6 @@ public class SettingsController : Controller
         if (sources is not null)
             await _filtersService.CreateSourcesAsync(sources.ToDictionary(z => z.SourceId, z => z.Name), HttpContext.RequestAborted);
 
-        return RedirectToAction("Index");
+        return RedirectToAction(nameof(Index));
     }
 }

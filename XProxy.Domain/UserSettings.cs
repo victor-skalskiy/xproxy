@@ -18,4 +18,8 @@ public class UserSettings
     public long XLombardDealTypeId { get; set; }
 
     public string XLombardSource { get; set; }
+
+    public string? TelegramBotToken { get; set; }
+
+    public long TelegramAdminChatId { get; set; }
 }

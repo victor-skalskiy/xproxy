@@ -22,16 +22,19 @@ builder.Services
     })
     .AddScoped<IUserSettingsStorage, UserSettingsStorage>()
     .AddScoped<IFilterStorage, FilterStorage>()
-    .AddScoped<ISettingsService, SettingsService>()
+    .AddScoped<ISettingsService, SettingsService>() 
     .AddScoped<IFiltersService, FiltersService>()
     .AddScoped<IExchangeServiceFactory, ExchangeServiceFactory>()
     .AddSingleton<IXProxyOptions, XProxyOptions>()
-    .AddHangfire(hangfire =>
-        hangfire
+    .AddScoped<ITelegramBotService, TelegramBotService>()
+    .AddHangfire(hangfireConfig =>
+        hangfireConfig
             .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
             .UseSimpleAssemblyNameTypeSerializer()
             .UseDefaultTypeSerializer()
-            .UseMemoryStorage());
+            .UseMemoryStorage())
+    .AddHangfireServer()
+    .AddSingleton<IRecurringJobManager, RecurringJobManager>();
 
 
 builder.Services.AddHttpClient("MyBaseClient", client =>

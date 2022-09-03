@@ -1,7 +1,7 @@
 ﻿@model SettingsEditModel
 
 <h2>AV100</h2>
-<div class="row">
+<div class="row mb-4">
     <div class="form-group col-md-12">
         <label class="form-label" asp-for="@Model.Av100Token"></label>
         <input class="form-control" asp-for="@Model.Av100Token" />
@@ -10,7 +10,7 @@
 </div>
 
 <h2>XLombard</h2>
-<div class="row">
+<div class="row mb-2">
     <div class="form-group col-md-6">
         <label class="form-label" asp-for="@Model.XLombardAPIUrl"></label>
         <input class="form-control" asp-for="@Model.XLombardAPIUrl" />
@@ -21,22 +21,35 @@
         <input class="form-control" asp-for="@Model.XLombardToken" />
         <span asp-validation-for="@Model.XLombardToken" class="text-danger"></span>
     </div>
-
+</div>
+<div class="row mb-4">
     <div class="form-group col-md-3">
         <label class="form-label" asp-for="@Model.XLombardFilialId"></label>
         <input class="form-control" asp-for="@Model.XLombardFilialId" />
         <span asp-validation-for="@Model.XLombardFilialId" class="text-danger"></span>
     </div>
-
     <div class="form-group col-md-3">
         <label class="form-label" asp-for="@Model.XLombardDealTypeId"></label>
         <input class="form-control" asp-for="@Model.XLombardDealTypeId" />
         <span asp-validation-for="@Model.XLombardDealTypeId" class="text-danger"></span>
     </div>
-
     <div class="form-group col-md-6">
         <label class="form-label" asp-for="@Model.XLombardSource"></label>
         <input class="form-control" asp-for="@Model.XLombardSource" />
         <span asp-validation-for="@Model.XLombardSource" class="text-danger"></span>
+    </div>
+</div>
+
+<h2>Telegram notify</h2>
+<div class="row mb-4">
+    <div class="form-group col-md-6">
+        <label class="form-label" asp-for="@Model.TelegramBotToken"></label>
+        <input class="form-control" asp-for="@Model.TelegramBotToken" />
+        <span asp-validation-for="@Model.TelegramBotToken" class="text-danger"></span>
+    </div>
+    <div class="form-group col-md-6">
+        <label class="form-label" asp-for="@Model.TelegramAdminChatId"></label>
+        <input class="form-control" asp-for="@Model.TelegramAdminChatId" />
+        <span asp-validation-for="@Model.TelegramAdminChatId" class="text-danger"></span>
     </div>
 </div>
