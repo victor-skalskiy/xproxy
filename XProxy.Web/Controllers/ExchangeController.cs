@@ -66,15 +66,32 @@ public class ExchangeController : Controller
             return Json(new ExchangeResult { Result = false, Message = ex.Message });
         }
     }
-
-    public async Task<IActionResult> StartHangfire()
+    
+    // public async Task<IActionResult> StartHangfire()
+    // {
+    //     var exchangeService = await _exchangeServiceFactory.CreateDefaultAsync();
+    //     _recurringJobManager.AddOrUpdate(
+    //         "CheckAndPull",
+    //         () => exchangeService.AV100CheckAndLoad(HttpContext.RequestAborted),
+    //         Cron.Minutely);
+    //
+    //     return Redirect("/");
+    // }
+    
+    public IActionResult StartHangfire()
     {
-        var exchangeService = await _exchangeServiceFactory.CreateDefaultAsync();
         _recurringJobManager.AddOrUpdate(
             "CheckAndPull",
-            () => exchangeService.AV100CheckAndLoad(HttpContext.RequestAborted),
+            () => RunJob(), // use public local method only (singularity of Expression<Func<Task>> parameter)
             Cron.Minutely);
-
+    
         return Redirect("/");
+    }
+    
+    public async Task RunJob()
+    {
+        var token = CancellationToken.None; // HttpContext is null because RunJob will call out of HTTP scope
+        var service = await _exchangeServiceFactory.CreateDefaultAsync(token);
+        await service.AV100CheckAndLoad(token);
     }
 }
