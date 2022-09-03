@@ -4,7 +4,9 @@ namespace XProxy.Interfaces;
 
 public interface ITelegramBotService
 {
-    Task SendMessage(long chatId, string message);
+    Task SendMessageDefault(long chatId, string message, CancellationToken token);
+    Task SendMessage(long userSettingsId, long chatId, string message, CancellationToken token);
 
-    Task SendMessageToAdmin(string message);
+    Task SendMessageToAdmin(long userSettingsId, string message, CancellationToken token);
+    Task SendMessageToAdminDefault(string message, CancellationToken token);
 }

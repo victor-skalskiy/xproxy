@@ -9,8 +9,6 @@ public class XProxyOptions : IXProxyOptions
     {
         var appSettings = configuration.GetSection("AppSetting");
         UpLink = appSettings.GetSection("Uplink").Value == "True";
-        TelegramBotToken = appSettings.GetSection("TelegramBotToken").Value;
-        TelegramAdminChatId = appSettings.GetValue<long>("TelegramAdminChatId");
         DefaultUserSettingsId = 1;
         AV100DictionaryAPIOperation = "dictionaries";
         AV100RegionAPIParameters = "name=offersregion";
@@ -38,8 +36,4 @@ public class XProxyOptions : IXProxyOptions
     public string AV100SourceAPIParameters { get; }
 
     public string HttpClientName { get; }
-
-    public string TelegramBotToken { get; }
-
-    public long TelegramAdminChatId { get; }
 }

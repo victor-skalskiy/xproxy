@@ -20,4 +20,8 @@ public class UserSettingsEntity : BaseEntityEntity
     /// Date of last syncing
     /// </summary>
     public DateTime LastSyncDate { get; set; }
+
+    public string? TelegramBotToken { get; set; }
+
+    public long TelegramAdminChatId { get; set; }
 }

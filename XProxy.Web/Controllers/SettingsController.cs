@@ -14,21 +14,18 @@ public class SettingsController : Controller
     private readonly IFiltersService _filtersService;
     private readonly IExchangeServiceFactory _exchangeServiceFactory;
     private readonly IXProxyOptions _options;
-    private readonly ITelegramBotService _telegramBotService;
 
     public SettingsController(
         ISettingsService settingsService,
         IFiltersService filtersService,
         IExchangeServiceFactory exchangeServiceFactory,
         IXProxyOptions xProxyOptions,
-        ITelegramBotService telegramBotService,
         ILogger<SettingsController> logger)
     {
         _settingsService = settingsService;
         _filtersService = filtersService;
         _exchangeServiceFactory = exchangeServiceFactory;
         _options = xProxyOptions;
-        _telegramBotService = telegramBotService;
         _logger = logger;
     }
 
@@ -42,8 +39,6 @@ public class SettingsController : Controller
     [Authorize]
     public async Task<IActionResult> Index()
     {
-        await _telegramBotService.SendMessageToAdmin("It's alive!");
-
         var exchangeService =
             await _exchangeServiceFactory.CreateAsync(_options.DefaultUserSettingsId, _options.DefaultFilterId, HttpContext.RequestAborted);
 
@@ -67,7 +62,8 @@ public class SettingsController : Controller
     public async Task<IActionResult> Create(SettingsEditModel model)
     {
         var resutl = await _settingsService.CreateUserSettingsAsync(model.Av100Token, model.XLombardAPIUrl, model.XLombardToken,
-            model.XLombardFilialId, model.XLombardDealTypeId, model.XLombardSource, HttpContext.RequestAborted);
+            model.XLombardFilialId, model.XLombardDealTypeId, model.XLombardSource, model.TelegramBotToken, model.TelegramAdminChatId,
+            HttpContext.RequestAborted);
 
         return RedirectToAction(nameof(Index));
     }
@@ -84,7 +80,9 @@ public class SettingsController : Controller
             XLombardToken = result.XLombardToken,
             XLombardDealTypeId = result.XLombardDealTypeId,
             XLombardFilialId = result.XLombardFilialId,
-            XLombardSource = result.XLombardSource
+            XLombardSource = result.XLombardSource,
+            TelegramBotToken = result.TelegramBotToken,
+            TelegramAdminChatId = result.TelegramAdminChatId
         });
     }
 
@@ -93,7 +91,8 @@ public class SettingsController : Controller
     public async Task<IActionResult> Edit(SettingsEditModel model, long id)
     {
         var resutl = await _settingsService.UpdateUserSettingsAsync(id, model.Av100Token, model.XLombardAPIUrl, model.XLombardToken,
-            model.XLombardFilialId, model.XLombardDealTypeId, model.XLombardSource, HttpContext.RequestAborted);
+            model.XLombardFilialId, model.XLombardDealTypeId, model.XLombardSource, model.TelegramBotToken, model.TelegramAdminChatId,
+            HttpContext.RequestAborted);
 
         return RedirectToAction(nameof(Index));
     }

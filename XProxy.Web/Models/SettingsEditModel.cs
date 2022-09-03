@@ -12,7 +12,7 @@ public class SettingsEditModel
 
     [Display(Name = "API Token"), Required(ErrorMessage = "field is required")]
     public string XLombardToken { get; set; }
-    
+
     [Display(Name = "Filial Id"), Required(ErrorMessage = "field is required")]
     public long XLombardFilialId { get; set; }
 
@@ -21,4 +21,10 @@ public class SettingsEditModel
 
     [Display(Name = "Source"), Required(ErrorMessage = "field is required")]
     public string XLombardSource { get; set; }
+
+    [Display(Name = "TelegramBotToken"), Required(ErrorMessage = "field is required")]
+    public string TelegramBotToken { get; set; }
+
+    [Display(Name = "TelegramAdminChatId"), Required(ErrorMessage = "field is required")]
+    public long TelegramAdminChatId { get; set; }
 }
