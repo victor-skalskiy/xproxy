@@ -6,6 +6,8 @@ using XProxy.Interfaces;
 using XProxy.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc.Filters;
+using XProxy.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -85,6 +87,10 @@ app.MapControllerRoute(
     pattern: "{controller=Settings}/{action=Index}/{id?}");
 app.MapRazorPages();
 
-app.UseHangfireDashboard();
+
+app.UseHangfireDashboard("/hangfire", new DashboardOptions
+{
+    Authorization = new[] { new HangfireAuthorizationFilter() }
+});
 
 app.Run();
