@@ -41,5 +41,9 @@
     <None Remove="Hangfire.MemoryStorage" />
     <None Remove="Npgsql" />
     <None Remove="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <None Remove="Tools\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Tools\" />
   </ItemGroup>
 </Project>

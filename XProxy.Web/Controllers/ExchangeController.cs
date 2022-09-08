@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using Hangfire;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using XProxy.Domain;
 using XProxy.Interfaces;
@@ -39,6 +40,8 @@ public class ExchangeController : Controller
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 
+    [HttpGet]
+    [Authorize]
     public async Task<IActionResult> CheckAndPull(long fromId, long toId)
     {
         try
@@ -53,6 +56,8 @@ public class ExchangeController : Controller
         }
     }
 
+    [HttpGet]
+    [Authorize]
     public async Task<JsonResult> LoadRetro()
     {
         try
@@ -67,6 +72,8 @@ public class ExchangeController : Controller
         }
     }
 
+    [HttpGet]
+    [Authorize]
     public IActionResult StartHangfire()
     {
         _recurringJobManager.AddOrUpdate(

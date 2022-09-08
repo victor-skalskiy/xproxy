@@ -4,6 +4,7 @@ using XProxy.Web.Models;
 using XProxy.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Hangfire;
+using System.Net;
 
 namespace XProxy.Web.Controllers;
 
@@ -30,9 +31,13 @@ public class SettingsController : Controller
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
+    public IActionResult Error(int? statusCode = null)
     {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        return View(new ErrorViewModel
+        {
+            RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier,
+            Code = statusCode.GetValueOrDefault(Response.StatusCode)
+        });
     }
 
     [HttpGet]
