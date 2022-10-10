@@ -24,4 +24,6 @@ public class UserSettingsEntity : BaseEntityEntity
     public string? TelegramBotToken { get; set; }
 
     public long TelegramAdminChatId { get; set; }
+
+    public bool TelegramExtendedLog { get; set; }
 }

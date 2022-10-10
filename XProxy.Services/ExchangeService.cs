@@ -287,7 +287,6 @@ public sealed class ExchangeService : IExchangeService
 
         if (availableCount < _filter.PackCount)
         {
-            await _telegramBotService.SendMessageToAdminDefault($"Not inserted, available count: {availableCount}", token);
             return new ExchangeResult { Result = false, Message = $"Not anought available count in av100 == {availableCount}" };
         }
 
@@ -322,8 +321,7 @@ public sealed class ExchangeService : IExchangeService
         {
             await _context.AV100Records.AddRangeAsync(toInsert.ToArray());
             await _context.SaveChangesAsync(token);
-        }
-        await _telegramBotService.SendMessageToAdminDefault($"Inserted: {toInsert.Count}", token);
+        }        
         return new ExchangeResult { Result = toInsert.Count > 0, SucceessfulCount = toInsert.Count, Message = "Successfuly loaded" };
     }
 }

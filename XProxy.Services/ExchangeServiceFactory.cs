@@ -48,18 +48,13 @@ public sealed class ExchangeServiceFactory : IExchangeServiceFactory
         long av100filterId,
         CancellationToken token = default)
     {
-        if (!_xProxyOptions.UpLink)
-        {
-            return new NopExchangeService();
-        }
-
         return new ExchangeService(
             await _userSettingsStorage.GetUserSettingsAsync(userSettingsId, token),
             new ExchangeServiceOptions(
                 _xProxyOptions.AV100DictionaryAPIOperation,
                 _xProxyOptions.AV100RegionAPIParameters,
                 _xProxyOptions.AV100SourceAPIParameters),
-        _httpClientFactory,
+            _httpClientFactory,
             await _filterStorage.GetFilterAsync(av100filterId, token),
             _xProxyOptions,
             _telegramBotService,

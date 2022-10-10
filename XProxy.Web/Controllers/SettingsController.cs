@@ -68,7 +68,7 @@ public class SettingsController : Controller
     {
         var resutl = await _settingsService.CreateUserSettingsAsync(model.Av100Token, model.XLombardAPIUrl, model.XLombardToken,
             model.XLombardFilialId, model.XLombardDealTypeId, model.XLombardSource, model.TelegramBotToken, model.TelegramAdminChatId,
-            HttpContext.RequestAborted);
+            model.TelegramExtendedLog, HttpContext.RequestAborted);
 
         return RedirectToAction(nameof(Index));
     }
@@ -87,7 +87,8 @@ public class SettingsController : Controller
             XLombardFilialId = result.XLombardFilialId,
             XLombardSource = result.XLombardSource,
             TelegramBotToken = result.TelegramBotToken,
-            TelegramAdminChatId = result.TelegramAdminChatId
+            TelegramAdminChatId = result.TelegramAdminChatId,
+            TelegramExtendedLog = result.TelegramExtendedLog
         });
     }
 
@@ -97,7 +98,7 @@ public class SettingsController : Controller
     {
         var resutl = await _settingsService.UpdateUserSettingsAsync(id, model.Av100Token, model.XLombardAPIUrl, model.XLombardToken,
             model.XLombardFilialId, model.XLombardDealTypeId, model.XLombardSource, model.TelegramBotToken, model.TelegramAdminChatId,
-            HttpContext.RequestAborted);
+            model.TelegramExtendedLog, HttpContext.RequestAborted);
 
         return RedirectToAction(nameof(Index));
     }

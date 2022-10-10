@@ -22,4 +22,6 @@ public class UserSettings
     public string? TelegramBotToken { get; set; }
 
     public long TelegramAdminChatId { get; set; }
+
+    public bool TelegramExtendedLog { get; set; }
 }

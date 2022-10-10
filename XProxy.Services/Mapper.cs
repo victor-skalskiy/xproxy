@@ -7,7 +7,7 @@ public static class Mapper
 {
     public static UserSettingsEntity FillSettingsEntity(UserSettingsEntity userSettingsEntity, string av100Token,
         string xLombardAPIUrl, string xLombardToken, long xLombardFilialId, long xLombardDealTypeId, string xLombardSource,
-        string telegramBotToken, long telegramAdminChatId)
+        string telegramBotToken, long telegramAdminChatId, bool telegramExtendedLog)
     {
         userSettingsEntity.AV100Token = av100Token;
         userSettingsEntity.XLombardAPIUrl = xLombardAPIUrl;
@@ -18,6 +18,7 @@ public static class Mapper
         userSettingsEntity.XLombardDealTypeId = xLombardDealTypeId;
         userSettingsEntity.TelegramAdminChatId = telegramAdminChatId;
         userSettingsEntity.TelegramBotToken = telegramBotToken;
+        userSettingsEntity.TelegramExtendedLog = telegramExtendedLog;
 
         return userSettingsEntity;
     }
@@ -32,7 +33,8 @@ public static class Mapper
             XLombardSource = userSettingsEntity.XLombardSource,
             XLombardDealTypeId = userSettingsEntity.XLombardDealTypeId,
             TelegramAdminChatId = userSettingsEntity.TelegramAdminChatId,
-            TelegramBotToken = userSettingsEntity.TelegramBotToken
+            TelegramBotToken = userSettingsEntity.TelegramBotToken,
+            TelegramExtendedLog = userSettingsEntity.TelegramExtendedLog
         };
     public static UserSettingsItem GetUserSettingsItem(UserSettingsEntity userSettingsEntity)
         => new UserSettingsItem

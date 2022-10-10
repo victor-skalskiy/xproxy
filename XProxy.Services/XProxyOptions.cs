@@ -8,7 +8,6 @@ public class XProxyOptions : IXProxyOptions
     public XProxyOptions(IConfiguration configuration)
     {
         var appSettings = configuration.GetSection("AppSetting");
-        UpLink = appSettings.GetSection("Uplink").Value == "True";
         DefaultUserSettingsId = 1;
         AV100DictionaryAPIOperation = "dictionaries";
         AV100RegionAPIParameters = "name=offersregion";
@@ -16,11 +15,6 @@ public class XProxyOptions : IXProxyOptions
         DefaultFilterId = 1;
         HttpClientName = "MyBaseClient";        
     }
-
-    /// <summary>
-    /// Exist internet connection, option for local development and debug
-    /// </summary>
-    public bool UpLink { get; }
 
     /// <summary>
     /// Hardcode UserSettingsEntityId for getting API's urls
