@@ -2,6 +2,7 @@
 using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NuGet.Common;
 using XProxy.Domain;
 using XProxy.Interfaces;
 using XProxy.Services;
@@ -17,6 +18,7 @@ public class ExchangeController : Controller
     private readonly ISettingsService _settingsService;
     private readonly IUserSettingsStorage _userSettingsStorage;
     private readonly IRecurringJobManager _recurringJobManager;
+    private readonly ITelegramBotService _telegramBotService;
 
     public ExchangeController(
         IExchangeServiceFactory exchangeServiceFactory,
@@ -24,6 +26,7 @@ public class ExchangeController : Controller
         ISettingsService settingsService,
         IUserSettingsStorage userSettingsStorage,
         IRecurringJobManager recurringJobManager,
+        ITelegramBotService telegramBotService,
         ILogger<ExchangeController> logger)
     {
         _logger = logger;
@@ -32,6 +35,7 @@ public class ExchangeController : Controller
         _settingsService = settingsService;
         _userSettingsStorage = userSettingsStorage;
         _recurringJobManager = recurringJobManager;
+        _telegramBotService = telegramBotService;
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -47,11 +51,18 @@ public class ExchangeController : Controller
         try
         {
             var exchangeService = await _exchangeServiceFactory.CreateDefaultAsync();
-            return Json(await exchangeService.AV100CheckAndLoad(fromId, toId, HttpContext.RequestAborted));
+            var result = await exchangeService.AV100CheckAndLoad(fromId, toId, HttpContext.RequestAborted);
+            if (result.Result)
+            {
+                XProxyLogger.Log($"{nameof(ExchangeController)}/{nameof(CheckAndPull)}", $"Inserted: {result.SucceessfulCount}",
+                    _telegramBotService, HttpContext.RequestAborted);
+            }
+            return Json(result);
         }
         catch (Exception ex)
         {
-            _logger.Log(LogLevel.Debug, ex, "Exchange/CheckAndPull exception");
+            XProxyLogger.ExceptionLog($"{nameof(ExchangeController)}/{nameof(CheckAndPull)}", ex,
+                _telegramBotService, HttpContext.RequestAborted);
             return Json(new ExchangeResult { Result = false, Message = ex.Message });
         }
     }
@@ -67,7 +78,8 @@ public class ExchangeController : Controller
         }
         catch (Exception ex)
         {
-            _logger.Log(LogLevel.Debug, ex, "Exchange/LoadRetro exception");
+            XProxyLogger.ExceptionLog($"{nameof(ExchangeController)}/{nameof(LoadRetro)}", ex,
+                _telegramBotService, HttpContext.RequestAborted);
             return Json(new ExchangeResult { Result = false, Message = ex.Message });
         }
     }
@@ -84,10 +96,31 @@ public class ExchangeController : Controller
         return Redirect("/");
     }
 
+    [HttpGet]
+    public IActionResult Test()
+    {
+        RunJob();
+        return Redirect("/");
+    }
+
     public async Task RunJob()
     {
-        var token = CancellationToken.None; // HttpContext is null because RunJob will call out of HTTP scope
-        var service = await _exchangeServiceFactory.CreateDefaultAsync(token);
-        await service.AV100CheckAndLoad(token);
+        try
+        {
+            var settings = await _userSettingsStorage.GetUserSettingsAsync(_options.DefaultUserSettingsId, CancellationToken.None);
+            var result = await (await _exchangeServiceFactory.CreateDefaultAsync(CancellationToken.None))
+                .AV100CheckAndLoad(CancellationToken.None);
+            if ((!result.Result && settings.TelegramExtendedLog) || result.Result)
+            {
+                XProxyLogger.Log($"{nameof(ExchangeController)}/{nameof(RunJob)}", $"{result.Message}\r\nInserted count: {result.SucceessfulCount}",
+                _telegramBotService, HttpContext.RequestAborted);
+            }
+
+        }
+        catch (Exception ex)
+        {
+            XProxyLogger.ExceptionLog($"{nameof(ExchangeController)}/{nameof(RunJob)}", ex,
+                _telegramBotService, HttpContext.RequestAborted);
+        }
     }
 }

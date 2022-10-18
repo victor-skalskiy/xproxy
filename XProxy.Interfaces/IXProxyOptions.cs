@@ -4,11 +4,6 @@ namespace XProxy.Interfaces
     public interface IXProxyOptions
     {
         /// <summary>
-        /// dev options, toggle internet usage
-        /// </summary>
-        bool UpLink { get; }
-         
-        /// <summary>
         /// Link to UserSettingsEntity for getting API's urls
         /// </summary>
         long DefaultUserSettingsId { get; }

@@ -47,9 +47,14 @@
         <input class="form-control" asp-for="@Model.TelegramBotToken" />
         <span asp-validation-for="@Model.TelegramBotToken" class="text-danger"></span>
     </div>
-    <div class="form-group col-md-6">
+    <div class="form-group col-md-3">
         <label class="form-label" asp-for="@Model.TelegramAdminChatId"></label>
         <input class="form-control" asp-for="@Model.TelegramAdminChatId" />
         <span asp-validation-for="@Model.TelegramAdminChatId" class="text-danger"></span>
+    </div>
+    <div class="form-group col-md-3">
+        <input class="form-check-input" asp-for=@Model.TelegramExtendedLog type="checkbox" />
+        <label class="form-check-label" asp-for="@Model.TelegramExtendedLog"></label>
+        <span asp-validation-for="@Model.TelegramExtendedLog" class="text-danger"></span>
     </div>
 </div>

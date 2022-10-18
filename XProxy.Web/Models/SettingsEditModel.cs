@@ -27,4 +27,7 @@ public class SettingsEditModel
 
     [Display(Name = "TelegramAdminChatId"), Required(ErrorMessage = "field is required")]
     public long TelegramAdminChatId { get; set; }
+
+    [Display(Name = "TelegramExtendedLog"), Required(ErrorMessage = "field is required")]
+    public bool TelegramExtendedLog { get; set; }
 }

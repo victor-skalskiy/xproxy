@@ -8,11 +8,12 @@ public interface ISettingsService
     Task<UserSettings> GetSettingsItemAsync(long id, CancellationToken token = default);
 
     Task<UserSettings> CreateUserSettingsAsync(string av100Token, string xLombardAPIUrl, string xLombardToken, long xLombardFilialId,
-        long xLombardDealTypeId, string xLombardSource, string TelegramBotToken, long TelegramAdminChatId,
+        long xLombardDealTypeId, string xLombardSource, string telegramBotToken, long telegramAdminChatId, bool telegramExtendedLog,
         CancellationToken token = default);
 
     Task<UserSettings> CreateTempUserSettingsAsync(CancellationToken token = default);
 
     Task<UserSettings> UpdateUserSettingsAsync(long id, string av100Token, string xLombardAPIUrl, string xLombardToken, long xLombardFilialId,
-        long xLombardDealTypeId, string xLombardSource, string TelegramBotToken, long TelegramAdminChatId, CancellationToken token = default);
+        long xLombardDealTypeId, string xLombardSource, string telegramBotToken, long telegramAdminChatId, bool telegramExtendedLog,
+    CancellationToken token = default);
 }

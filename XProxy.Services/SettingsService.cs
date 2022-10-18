@@ -19,7 +19,7 @@ public class SettingsService : ISettingsService
     /// </summary>
     public Task<UserSettings> CreateTempUserSettingsAsync(CancellationToken token = default)
     {
-        return CreateUserSettingsAsync("change it", "change it", "change it", 0, 0, "change it", string.Empty, 0, token);
+        return CreateUserSettingsAsync("change it", "change it", "change it", 0, 0, "change it", string.Empty, 0, false, token);
     }
 
     /// <summary>
@@ -27,10 +27,11 @@ public class SettingsService : ISettingsService
     /// </summary>
     public async Task<UserSettings> CreateUserSettingsAsync(string av100Token, string xLombardAPIUrl,
         string xLombardToken, long xLombardFilialId, long xLombardDealTypeId, string xLombardSource, string telegramBotToken,
-        long telegramAdminChatId, CancellationToken token = default)
+        long telegramAdminChatId, bool telegramExtendedLog, CancellationToken token = default)
     {
         var userSettingsEntity = Mapper.FillSettingsEntity(new UserSettingsEntity(), av100Token, xLombardAPIUrl,
-            xLombardToken, xLombardFilialId, xLombardDealTypeId, xLombardSource, telegramBotToken, telegramAdminChatId) ;
+            xLombardToken, xLombardFilialId, xLombardDealTypeId, xLombardSource, telegramBotToken, telegramAdminChatId,
+            telegramExtendedLog) ;
 
         _context.UserSettings.Add(userSettingsEntity);
         await _context.SaveChangesAsync(token);
@@ -43,7 +44,7 @@ public class SettingsService : ISettingsService
     /// </summary>
     public async Task<UserSettings> UpdateUserSettingsAsync(long id, string av100Token, string xLombardAPIUrl, string xLombardToken,
         long xLombardFilialId, long xLombardDealTypeId, string xLombardSource, string telegramBotToken, long telegramAdminChatId,
-        CancellationToken token = default)
+        bool telegramExtendedLog, CancellationToken token = default)
     {
         var userSettingsEntity = await _context.UserSettings.Where(x => x.Id == id).FirstOrDefaultAsync(token);
 
@@ -51,7 +52,7 @@ public class SettingsService : ISettingsService
             throw new Exception($"Can't get UserSettingsEntity by id = {id}");
 
         userSettingsEntity = Mapper.FillSettingsEntity(userSettingsEntity, av100Token, xLombardAPIUrl, xLombardToken,
-            xLombardFilialId, xLombardDealTypeId, xLombardSource, telegramBotToken, telegramAdminChatId);
+            xLombardFilialId, xLombardDealTypeId, xLombardSource, telegramBotToken, telegramAdminChatId, telegramExtendedLog);
 
         _context.UserSettings.Update(userSettingsEntity);
         await _context.SaveChangesAsync(token);
